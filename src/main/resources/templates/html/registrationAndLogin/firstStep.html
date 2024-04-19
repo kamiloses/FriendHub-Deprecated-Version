@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - FriendHub</title>
+    <link rel="stylesheet" href="/templates/css/firstStep.css">
+</head>
+<body>
+<div class="register">
+    <div class="registerForm">
+        <h1>Create a New Account</h1>
+        <form>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="lastName">Last name:</label>
+            <input type="text" id="lastName" name="lastName" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <div class="dobSelects">
+                <label>Date of Birth:</label>
+                <div class="dobSelect">
+                    <select id="dob-day" name="dob-day" required>
+                        <option value="" disabled selected>Day</option>
+                    </select>
+                </div>
+                <div class="dob-select">
+                    <select id="dob-month" name="dob-month" required>
+                        <option value="" disabled selected>Month</option>
+                    </select>
+                </div>
+                <div class="dob-select">
+                    <select id="dob-year" name="dob-year" required>
+                        <option value="" disabled selected>Year</option>
+                    </select>
+                </div>
+            </div>
+            <label for="sex">Sex:</label>
+            <select id="sex" name="sex" required>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+            </select>
+            <button type="submit">Register</button>
+        </form>
+        <div class="loginLink">
+            <p>Already have an account? <a href="/login">Log in here</a></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
