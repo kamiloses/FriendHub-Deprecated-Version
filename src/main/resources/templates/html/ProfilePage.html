@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile - My Social App</title>
+    <link rel="stylesheet" href="/templates/css/ProfilePage.css">
+</head>
+<body>
+<header>
+    <div >
+        <nav>
+            Logo
+            <input  placeholder="Search for friends">
+            <h1>FriendHub</h1>
+            <a href="">Home</a>
+            <a href="">Profile</a>
+            <a href="">Friends</a>
+        </nav>
+    </div>
+</header>
+
+<div >
+    <main>
+        <section class="profile-details">
+            <h2>Edit Profile</h2>
+            <form id="profileForm">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName" required><br><br>
+
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName" required><br><br>
+
+                <label for="birthdate">Date of Birth:</label>
+                <input type="date" id="birthdate" name="birthdate" required><br><br>
+
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location"><br><br>
+
+                <label for="education">Education:</label>
+                <input type="text" id="education" name="education"><br><br>
+
+                <label for="work">Work:</label>
+                <input type="text" id="work" name="work"><br><br>
+
+                <label for="relationshipStatus">Relationship Status:</label>
+                <select id="relationshipStatus" name="relationshipStatus">
+                    <option value="single">Single</option>
+                    <option value="inRelationship">In a Relationship</option>
+                    <option value="engaged">Engaged</option>
+                    <option value="married">Married</option>
+                    <option value="complicated">It's Complicated</option>
+                </select><br><br>
+
+                <label for="interests">Interests:</label>
+                <textarea id="interests" name="interests" rows="4"></textarea><br><br>
+
+                <label for="aboutMe">About Me:</label>
+                <textarea id="aboutMe" name="aboutMe" rows="4"></textarea><br><br>
+
+                <label for="profilePicture">Profile Picture:</label>
+                <input type="file" id="profilePicture" name="profilePicture"><br><br>
+
+                <button type="submit">Save Changes</button>
+            </form>
+        </section>
+    </main>
+</div>
+
+<footer>
+    <div >
+        <p>&copy; 2024 Friendhub</p>
+    </div>
+</footer>
+
+</body>
+</html>
