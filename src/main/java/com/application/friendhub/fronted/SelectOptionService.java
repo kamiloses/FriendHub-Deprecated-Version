@@ -1,6 +1,6 @@
 package com.application.friendhub.fronted;
 
-import com.application.friendhub.dto.FirstStepDto;
+import com.application.friendhub.registrationProcess.FirstStepDto;
 import com.application.friendhub.dto.Months;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -57,16 +55,16 @@ public class SelectOptionService {
     }
 
 
-    public boolean isALeapYear(FirstStepDto firstStepDto) {
-        int year = firstStepDto.getDate().getYear();
+    public boolean isALeapYear(FirstStepDto userDetailsDto) {
+        int year = userDetailsDto.getDate().getYear();
 
         return (year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0);
     }
 
 
-    public int maxDayOfMonth(FirstStepDto firstStepDto) {
+    public int maxDayOfMonth(FirstStepDto userDetailsDto) {
 
-        Months change = change(firstStepDto);
+        Months change = change(userDetailsDto);
         int maxNumberOfMonth;
 
         switch (change) {
@@ -88,7 +86,7 @@ public class SelectOptionService {
                 break;
 
             case FEBRUARY:
-            if (isALeapYear(firstStepDto)) {
+            if (isALeapYear(userDetailsDto)) {
                 maxNumberOfMonth = 29;
             } else {
                 maxNumberOfMonth = 28;
@@ -105,8 +103,8 @@ public class SelectOptionService {
         return maxNumberOfMonth;
     }
 
-    public Months change(FirstStepDto firstStepDto) {
-        String months = String.valueOf(firstStepDto.getDate().getMonth());
+    public Months change(FirstStepDto userDetailsDto) {
+        String months = String.valueOf(userDetailsDto.getDate().getMonth());
         switch (months) {
             case "1":
                 return Months.JANUARY;
@@ -176,7 +174,8 @@ public class SelectOptionService {
         }
     }
 
-
+public boolean validateDayOfMonth(FirstStepDto userDetailsDto){
+   return userDetailsDto.getDate().getDay() <=maxDayOfMonth(userDetailsDto);}
 
 
 
