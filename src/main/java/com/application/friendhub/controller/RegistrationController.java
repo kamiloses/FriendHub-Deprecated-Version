@@ -3,9 +3,10 @@ package com.application.friendhub.controller;
 import com.application.friendhub.Entity.UserDetailsEntity;
 import com.application.friendhub.Entity.UserEntity;
 import com.application.friendhub.Repository.UserDetailsRepository;
-import com.application.friendhub.dto.FirstStepDto;
+import com.application.friendhub.Repository.UserRepository;
+import com.application.friendhub.registrationProcess.FirstStepDto;
 import com.application.friendhub.fronted.SelectOptionService;
-import com.application.friendhub.service.FirstStepDtoService;
+import com.application.friendhub.registrationProcess.FirstStepDtoService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +26,13 @@ public class RegistrationController {
     private final SelectOptionService selectOptionService;
     private final FirstStepDtoService firstStepDtoService;
     private final UserDetailsRepository userDetailsRepository;
+    private final UserRepository userRepository;
 
-    public RegistrationController(SelectOptionService selectOptionService, FirstStepDtoService firstStepDtoService, UserDetailsRepository userDetailsRepository) {
+    public RegistrationController(SelectOptionService selectOptionService, FirstStepDtoService firstStepDtoService, UserDetailsRepository userDetailsRepository, UserRepository userRepository) {
         this.selectOptionService = selectOptionService;
         this.firstStepDtoService = firstStepDtoService;
         this.userDetailsRepository = userDetailsRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/register/firstStep")
@@ -60,7 +63,7 @@ public class RegistrationController {
             return "html/registrationAndLogin/firstStep";
         }
 
-        firstStepDtoService.selectOptionToFirstStep(day, month, year, firstStepDto);
+        firstStepDtoService.SetMonthForFirstStepDto(day, month, year, firstStepDto);
         if (!selectOptionService.validateDayOfMonth(firstStepDto)) {
             model.addAttribute("days", selectOptionService.getDays());
             model.addAttribute("months", selectOptionService.getMonths());
@@ -68,11 +71,12 @@ public class RegistrationController {
             //todo dodać komunikat związany z  validateDayOfMonth
             return "html/registrationAndLogin/firstStep";
         }
-
-
-
-        UserDetailsEntity userDetailsEntity = firstStepDtoService.firstStepDtoToUserDetailsEntity(firstStepDto);
+        UserEntity user = firstStepDtoService.convertFirstStepDtoToUserEntity(firstStepDto);
+        UserEntity userEntity = userRepository.save(user);
+        UserDetailsEntity userDetailsEntity = firstStepDtoService.convertFirstStepDtoToUserDetailsEntity(firstStepDto,userEntity);
         userDetailsRepository.save(userDetailsEntity);
+
+
         return "redirect:/register/friendHub/secondStep";
     }
 
