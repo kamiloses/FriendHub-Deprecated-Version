@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>d</title>
+    <link rel="stylesheet" href="/css/searchFriends.css" >
+</head>
+<body>
+<header>
+    <div >
+        <nav>
+            Logo
+            <form th:action="@{/friendhub/searchFriends}" method="get">
+                <input type="text" name="searchTerm" placeholder="Search for friends">
+                <button type="submit">Search</button>
+            </form>
+            <h1>FriendHub</h1>
+            <!--<a href="">Home</a>-->
+            <button  onclick="window.location.href='http://localhost:8080/home'" >profile</button>
+
+            <!--            <a href="">Profile</a>-->
+            <button  onclick="window.location.href='http://localhost:8080/friendhub/profile'" >profile</button>
+
+            <!--            <a href="">Friends</a>-->
+            <button  onclick="window.location.href='http://localhost:8080/friendhub/friends'" >friends</button>
+        </nav>
+    </div>
+
+</header>
+<!--http://localhost:8080/friendhub/searchFriends/abcdefg-->
+    <div class="friends-list">
+        <div th:each="user : ${foundUsers}" class="friend">
+            <a th:href="@{'/profile/' + ${user.id}}">
+                <img src="facebookAvatar.png" alt="Profile Image">
+            </a>
+            <a th:href="@{'/profile/' + ${user.id}}">
+                <span class="name" th:text="${user.firstName + ' ' + user.lastName}">First Name Last Name</span>
+            </a>
+            <form class="friend-form" th:action="@{/friendhub/addFriend/{firstName}}" th:object="${user}" method="post">
+                <input class="name" type="hidden" th:value="*{getFirstName()}" />   <!--th:value="*{getFirstName()}"-->
+                <input type="hidden" th:value="*{getLastName()}" />
+                <input type="hidden"  />       50   wspólnych znajomych
+                <button type="submit">Add Friend</button>
+            </form>
+        </div>
+    </div>
+
+
+
+
