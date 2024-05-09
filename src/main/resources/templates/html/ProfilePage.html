@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>My Profile - My Social App</title>
-    <link rel="stylesheet" href="/templates/css/ProfilePage.css">
+    <link rel="stylesheet" href="/css/ProfilePage.css">
 </head>
 <body>
 <header>
@@ -12,9 +12,15 @@
             Logo
             <input  placeholder="Search for friends">
             <h1>FriendHub</h1>
-            <a href="">Home</a>
-            <a href="">Profile</a>
-            <a href="">Friends</a>
+            <h1>FriendHub</h1>
+            <!--<a href="">Home</a>-->
+            <button  onclick="window.location.href='http://localhost:8080/home'" >profile</button>
+
+            <!--            <a href="">Profile</a>-->
+            <button  onclick="window.location.href='http://localhost:8080/friendhub/profile'" >profile</button>
+
+            <!--            <a href="">Friends</a>-->
+            <button  onclick="window.location.href='http://localhost:8080/friendhub/friends'" >friends</button>
         </nav>
     </div>
 </header>
@@ -23,24 +29,25 @@
     <main>
         <section class="profile-details">
             <h2>Edit Profile</h2>
-            <form id="profileForm">
+            <form id="profileForm"  action="/friendhub/profile/add" th:object="${userDetailsEntity}" method="post">
                 <label for="firstName">First Name:</label>
-                <input type="text" id="firstName" name="firstName" required><br><br>
+                <input type="text" id="firstName" name="firstName"  th:value="*{getFirstName()}" ><br><br>
 
                 <label for="lastName">Last Name:</label>
-                <input type="text" id="lastName" name="lastName" required><br><br>
+                <input type="text" id="lastName" name="lastName" th:value="*{getLastName()}"><br><br>
 
                 <label for="birthdate">Date of Birth:</label>
-                <input type="date" id="birthdate" name="birthdate" required><br><br>
+                <input type="date" id="birthdate" name="birthdate" ><br><br>
 
                 <label for="location">Location:</label>
-                <input type="text" id="location" name="location"><br><br>
+                <input type="text" id="location" name="location"  th:value="*{getNationality()}"><br><br>
+<!--todo zmien nazwe id dla locaiton-->
 
                 <label for="education">Education:</label>
-                <input type="text" id="education" name="education"><br><br>
+                <input type="text" id="education" name="education" th:value="*{getEducation()}"><br><br>
 
                 <label for="work">Work:</label>
-                <input type="text" id="work" name="work"><br><br>
+                <input type="text" id="work" name="work" ><br><br>
 
                 <label for="relationshipStatus">Relationship Status:</label>
                 <select id="relationshipStatus" name="relationshipStatus">

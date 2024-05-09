@@ -1,25 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Login - FriendHub</title>
-    <link rel="stylesheet" href="/templates/css/login.css">
+    <link rel="stylesheet" href="/css/registrationAndLogin/login.css">
 </head>
 <body>
 <div class="login">
     <div class="loginForm">
         <h1>Login to FriendHub</h1>
-        <form>
+<!--        <p th:if="${loginError}" class="error">Wrong user or password</p>-->
+        <form th:action="@{/friendHub/login}" method="post">
             <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+            <input type="text" id="username" name="username" placeholder="Username" required>
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
-            <button type="submit">Login</button>
+            <button type="submit" >Login</button>
         </form>
         <div class="forgotPassword">
         <a href="/reset-password">do not remember your password ?</a></div>
         <div class="newAccount">
-        <a href="/register">Create a new account</a>
+        <a href="/register/firstStep">Create a new account</a>
         </div>
         </div>
 </div>

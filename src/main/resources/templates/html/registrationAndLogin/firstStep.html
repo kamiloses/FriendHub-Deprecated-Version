@@ -1,43 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Register - FriendHub</title>
-    <link rel="stylesheet" href="/templates/css/firstStep.css">
+    <link rel="stylesheet" href="/css/registrationAndLogin/firstStep.css"><!--dodac /static -->
 </head>
 <body>
 <div class="register">
     <div class="registerForm">
         <h1>Create a New Account</h1>
-        <form>
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
+        <form action="/register/firstStep/add" method="post" th:object="${firstStepDto}" >
+            <label for="firstName">First name:</label>
+            <input type="text" id="firstName" name="firstName" th:value="*{firstName}">
+            <p th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="error"></p>
             <label for="lastName">Last name:</label>
-            <input type="text" id="lastName" name="lastName" required>
+            <input type="text" id="lastName" name="lastName" th:value="*{lastName}" >
+            <p th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="error"></p>
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+            <input type="email" id="email" name="email" th:value="*{email}" >
+            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error"></p>
             <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
+            <input type="password" id="password" name="password" th:value="*{password}"  >
+            <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error"></p>
             <div class="dobSelects">
                 <label>Date of Birth:</label>
                 <div class="dobSelect">
-                    <select id="dob-day" name="dob-day" required>
-                        <option value="" disabled selected>Day</option>
+                    <select id="dob-day" name="dob-day" >
+                        <option th:each="day : ${days}" th:value="${day.getValue()}"  th:text="${day.getValue()}">   </option>
+
+
                     </select>
                 </div>
                 <div class="dob-select">
-                    <select id="dob-month" name="dob-month" required>
-                        <option value="" disabled selected>Month</option>
+                    <select id="dob-month" name="dob-month" >
+                        <option th:each="month : ${months}" th:value="${month.getValue()}"  th:text="${month.getValue()}"> </option>
                     </select>
                 </div>
                 <div class="dob-select">
-                    <select id="dob-year" name="dob-year" required>
-                        <option value="" disabled selected>Year</option>
+                    <select id="dob-year" name="dob-year" >
+                        <option th:each="year : ${years}" th:value="${year.getValue()}"  th:text="${year.getValue()}"> </option>
                     </select>
                 </div>
             </div>
             <label for="sex">Sex:</label>
-            <select id="sex" name="sex" required>
+            <select id="sex" name="sex" >
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="other">Other</option>

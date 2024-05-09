@@ -1,12 +1,11 @@
-package com.application.friendhub.dto;
+package com.application.friendhub.registrationProcess;
 
+import com.application.friendhub.dto.DateOfBirth;
+import com.application.friendhub.dto.Role;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-
-import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -19,7 +18,7 @@ public class FirstStepDto {
     @Pattern(regexp = "^[a-zA-Z]+$", message = "the first name field should contain only letters ")
     private String firstName;
 
-//    @Size(min = 2, max = 30, message = "the last name field should have between 2 and 30 letters")
+    //    @Size(min = 2, max = 30, message = "the last name field should have between 2 and 30 letters")
     @Pattern(regexp = "[a-zA-Z]{3,15}", message = "the first name field should contain only letters and have between 3 and 15 letters")
 
     private String lastName;
@@ -32,6 +31,8 @@ public class FirstStepDto {
 //    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).*$",
 //            message = "the password field should contain at least  one lower Case letter,one upper case letter, one digit and one special character")
     private String password;
+
+    private Role role;
 
     private DateOfBirth date;
 

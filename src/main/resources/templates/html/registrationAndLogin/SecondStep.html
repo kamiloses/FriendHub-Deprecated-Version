@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Email - FriendHub</title>
+    <link rel="stylesheet" href="/templates/html/registrationAndLogin/SecondStep.css"><
+</head>
+<body>
+<div class="verify">
+    <div class="verifyForm">
+        <h1>Verify Email</h1>
+        <form action="/register/secondStep/add" method="post"  th:object="${secondStepDto}">
+            <label for="token">Token:</label>
+            <input type="text" id="token" name="token" required>
+            <p th:if="${#fields.hasErrors('token')}" th:errors="*{token}" class="error"></p>
+
+            <button type="submit">Verify</button>
+        </form  >
+        <p class="resendToken"><a href="#">Resend Token Verification</a></p>
+    </div>
+</div>
+</body>
+</html>

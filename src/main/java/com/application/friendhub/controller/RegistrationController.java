@@ -87,7 +87,7 @@ public class RegistrationController {
 
         token = emailService.generateToken();
         LOG.error(token);
-        emailService.sendEmail(user.getEmail(),token);
+       /* emailService.sendEmail(user.getEmail(),token);*/
 
         return "redirect:/register/secondStep";
     }

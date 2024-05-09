@@ -2,12 +2,15 @@ package com.application.friendhub.controller;
 
 import com.application.friendhub.Entity.FriendsListEntity;
 import com.application.friendhub.Entity.UserDetailsEntity;
-import com.application.friendhub.Entity.mainSide.TimelineEntity;
+import com.application.friendhub.Entity.TimelineEntity;
+import com.application.friendhub.Repository.TimelineRepository;
 import com.application.friendhub.Repository.UserDetailsRepository;
 import com.application.friendhub.Repository.UserRepository;
 import com.application.friendhub.dto.ProfileDto;
+import com.application.friendhub.dto.TimelineDto;
 import com.application.friendhub.service.FriendsService;
 import com.application.friendhub.service.ProfileDtoService;
+import com.application.friendhub.service.TimelineService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -20,6 +23,10 @@ import java.util.List;
 @Slf4j
 public class HomeController {
 
+
+      private final TimelineService timelineService;
+    private final TimelineRepository timelineRepository;
+
     private final UserDetailsRepository userDetailsRepository;
 
     private final ProfileDtoService profileDtoService;
@@ -27,11 +34,13 @@ public class HomeController {
     private final UserRepository userRepository;
     private final FriendsService friendsService;
 
-    public HomeController(UserDetailsRepository userDetailsRepository, ProfileDtoService profileDtoService, UserRepository userRepository, FriendsService friendsService) {
+    public HomeController(TimelineService timelineService, TimelineRepository timelineRepository, UserDetailsRepository userDetailsRepository, ProfileDtoService profileDtoService, UserRepository userRepository, FriendsService friendsService) {
+        this.timelineService = timelineService;
         this.userDetailsRepository = userDetailsRepository;
         this.profileDtoService = profileDtoService;
         this.userRepository = userRepository;
         this.friendsService = friendsService;
+        this.timelineRepository = timelineRepository;
     }
 
 
@@ -43,15 +52,17 @@ public class HomeController {
         return "html/mainPaige";
     }
 
-   /* @PostMapping("/home/add")
-    public String addPostOnHomeSide(Model model) {
+   @PostMapping("/home/add")
+    public String addPostOnHomeSide(@ModelAttribute TimelineDto timelineDto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
+       TimelineEntity timelineEntity = timelineService.timelineDtoToEntity(timelineDto);
+       timelineRepository.save(timelineEntity);
+       log.error("saved");
 
 
-        model.addAttribute("userDetails", userDetails);
 
-        return "redirect:/html/mainPaige";
-    }*/
+        return "redirect:/home";
+    }
 
 
 

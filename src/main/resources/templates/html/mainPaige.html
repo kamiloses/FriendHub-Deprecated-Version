@@ -1,20 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>d</title>
-    <link rel="stylesheet" href="../css/mainPaige.css" >
+    <link rel="stylesheet" href="/css/mainPaige.css">
 </head>
 <body>
 <header>
-    <div >
+    <div>
         <nav>
-             Logo
-            <input  placeholder="Search for friends">
+            Logo
+            <form th:action="@{/friendhub/searchFriends}" method="get">
+                <input type="text" name="fullName" placeholder="First Name and Last Name">
+                <button type="submit">Search</button>
+            </form>
             <h1>FriendHub</h1>
-            <a href="">Home</a>
-            <a href="">Profile</a>
-            <a href="">Friends</a>
+            <!--<a href="">Home</a>-->
+            <button onclick="window.location.href='http://localhost:8080/home'">profile</button>
+
+            <!--            <a href="">Profile</a>-->
+            <button onclick="window.location.href='http://localhost:8080/friendhub/profile'">profile</button>
+
+            <!--            <a href="">Friends</a>-->
+            <button onclick="window.location.href='http://localhost:8080/friendhub/friends'">friends</button>
         </nav>
     </div>
 </header>
@@ -32,19 +40,50 @@
     <main>
         <section>
             <h2>Timeline</h2>
-            <form>
-                <textarea placeholder="What's on your mind?"></textarea>
+            <form action="/home/add" method="post">
+                <textarea name="post"  placeholder="What's on your mind?"></textarea>
                 <button type="submit">Post</button>
             </form>
-            <div class="post">
-                <p>dsadaassac</p>
+            <div class="profile" th:if="${not #lists.isEmpty(allPosts)}" th:each="post : ${allPosts}">
+                <div class="all">
+                    <img src="facebookAvatar.png" alt="Profile Image">
+                    <span class="name" th:text="${post.getAuthor()}"></span>
+                    <span>Opublikowany przez <span th:text="${post.getAuthor()}"></span></span>
+
+
+
+                </div>
+                <div th:text="${post.getPost()}">
+                </div>
+                <div class="post-information">
+                    <span>likes</span>
+                    <span>comments</span>
+                    <span>uploads</span>
+
+                </div>
+                <div class="interactions">
+                    <button>likes</button>
+                    <button>comments</button>
+                    <button>uploads</button>
+
+                </div>
+
+
             </div>
+
+
         </section>
     </main>
 </div>
 
+<div>
+
+
+</div>
+
+
 <footer>
-    <div >
+    <div>
         <p>&copy; 2024 </p>
     </div>
 </footer>

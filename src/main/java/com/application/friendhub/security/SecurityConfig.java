@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +24,8 @@ public class SecurityConfig {
                 requestMatchers("/friendHub/secondStep").permitAll().anyRequest().permitAll()
 
         ).formLogin(login->login.loginPage("/friendHub/login").permitAll());
+         SecurityContextHolder securityContextHolder = new SecurityContextHolder();
+        SecurityContext context = SecurityContextHolder.getContext();
 
         return http.build();}
 

@@ -4,6 +4,7 @@ import com.application.friendhub.Entity.UserDetailsEntity;
 import com.application.friendhub.Entity.UserEntity;
 import com.application.friendhub.Repository.UserRepository;
 import com.application.friendhub.dto.DateOfBirth;
+import com.application.friendhub.dto.Role;
 import com.application.friendhub.fronted.SelectOptionService;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,7 @@ public class FirstStepDtoService {
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail(firstStepDto.getEmail());
         userEntity.setPassword(firstStepDto.getPassword());
+        userEntity.setRole(Role.ROLE_USER);
 
 
         return userEntity;
