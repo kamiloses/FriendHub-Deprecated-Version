@@ -18,29 +18,25 @@ public class FriendsService {
     }
 
 
-    public void findUserByNameOrSurname(Model model, @RequestParam(required = false) String fullName) {
+    public List<UserDetailsEntity> findUserByNameOrSurname( @RequestParam(required = false) String fullName) {
+        List<UserDetailsEntity> foundUsers=null;
         String firstName;
         String lastName;
         String[] parts = fullName.split(" ");
         if (parts.length == 2) {
             firstName = parts[0];
             lastName = parts[1];
-            List<UserDetailsEntity> foundUsers = userDetailsRepository.findUserDetailsEntitiesByFirstNameOrLastName(firstName, lastName);
-            model.addAttribute("foundUsers", foundUsers);
+             foundUsers = userDetailsRepository.findUserDetailsEntitiesByFirstNameOrLastName(firstName, lastName);
             if (foundUsers.isEmpty()) {
                 firstName = parts[1];
                 lastName = parts[0];
-                List<UserDetailsEntity> replacedNameAndLastNameUser = userDetailsRepository.findUserDetailsEntitiesByFirstNameOrLastName(firstName, lastName);
-                model.addAttribute("foundUsers", replacedNameAndLastNameUser);
+                foundUsers = userDetailsRepository.findUserDetailsEntitiesByFirstNameOrLastName(firstName, lastName);
             }
         } else {
-            List<UserDetailsEntity> foundUsers = userDetailsRepository.findUserDetailsEntitiesByFirstNameOrLastName(fullName, fullName);
-            model.addAttribute("foundUsers", foundUsers);
+             foundUsers = userDetailsRepository.findUserDetailsEntitiesByFirstNameOrLastName(fullName, fullName);
+
 
         }
 
-
-    }
+return foundUsers;}
 }
-
-
