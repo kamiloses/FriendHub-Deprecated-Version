@@ -1,9 +1,8 @@
-package com.application.friendhub.service;
+package com.application.friendhub.loggedUser.service;
 
 import com.application.friendhub.Entity.UserDetailsEntity;
 import com.application.friendhub.Repository.UserDetailsRepository;
-import com.application.friendhub.dto.ProfileDto;
-import org.springframework.security.core.Authentication;
+import com.application.friendhub.loggedUser.dto.ProfileDto;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +21,12 @@ public class ProfileDtoService {
         UserDetailsEntity userDetailsEntity = userDetailsRepository.findUserDetailsEntityByUserEntity_Email(name);
         userDetailsEntity.setFirstName(profileDto.getFirstName());
         userDetailsEntity.setLastName(profileDto.getLastName());
-        userDetailsEntity.setDate(profileDto.getDate());
-        userDetailsEntity.setNationality(profileDto.getNationality());
+//        userDetailsEntity.setDate(profileDto.getDate());
+        userDetailsEntity.setLocalization(profileDto.getLocalization());
         userDetailsEntity.setEducation(profileDto.getEducation());
-        userDetailsEntity.setSex(profileDto.getSex());
+        userDetailsEntity.setWork(profileDto.getWork());
+//        userDetailsEntity.setSex(profileDto.getSex());
+        userDetailsEntity.setInterests(profileDto.getInterests());
 
 
         return userDetailsEntity;}
@@ -37,10 +38,10 @@ public class ProfileDtoService {
         ProfileDto profileDto = new ProfileDto();
         profileDto.setFirstName(userDetailsEntity.getFirstName());
         profileDto.setLastName(userDetailsEntity.getLastName());
-        profileDto.setDate(userDetailsEntity.getDate());
-        profileDto.setNationality(userDetailsEntity.getNationality());
+//        profileDto.setDate(userDetailsEntity.getDate());
+        profileDto.setLocalization(userDetailsEntity.getLocalization());
         profileDto.setEducation(userDetailsEntity.getEducation());
-        profileDto.setSex(userDetailsEntity.getSex());
+//        profileDto.setSex(userDetailsEntity.getSex());
     return profileDto;}
 
 

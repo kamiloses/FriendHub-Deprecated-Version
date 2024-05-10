@@ -1,4 +1,4 @@
-package com.application.friendhub.controller;
+package com.application.friendhub.loggedUser.controller;
 
 import com.application.friendhub.Entity.FriendsListEntity;
 import com.application.friendhub.Entity.UserDetailsEntity;
@@ -6,11 +6,11 @@ import com.application.friendhub.Entity.TimelineEntity;
 import com.application.friendhub.Repository.TimelineRepository;
 import com.application.friendhub.Repository.UserDetailsRepository;
 import com.application.friendhub.Repository.UserRepository;
-import com.application.friendhub.dto.ProfileDto;
 import com.application.friendhub.dto.TimelineDto;
-import com.application.friendhub.service.FriendsService;
-import com.application.friendhub.service.ProfileDtoService;
-import com.application.friendhub.service.TimelineService;
+import com.application.friendhub.loggedUser.dto.ProfileDto;
+import com.application.friendhub.loggedUser.service.FriendsService;
+import com.application.friendhub.loggedUser.service.ProfileDtoService;
+import com.application.friendhub.loggedUser.service.TimelineService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;

@@ -1,6 +1,6 @@
 package com.application.friendhub.Entity;
 
-import com.application.friendhub.dto.Role;
+import com.application.friendhub.api.other.Role;
 import jakarta.persistence.*;
 import lombok.*;
 

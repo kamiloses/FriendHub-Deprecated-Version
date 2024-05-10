@@ -1,15 +1,9 @@
 package com.application.friendhub.Entity;
 
-import com.application.friendhub.dto.DateOfBirth;
-import com.application.friendhub.dto.Sex;
+import com.application.friendhub.registrationProcess.other.DateOfBirth;
+import com.application.friendhub.registrationProcess.other.Sex;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.userdetails.User;
-
-import java.awt.*;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.Locale;
 
 @Entity
 @NoArgsConstructor
@@ -29,12 +23,16 @@ public class UserDetailsEntity {
     @Embedded
     private DateOfBirth date;
 
-    private Locale nationality;
+    private String localization;
 
     private String Education;
 
+    private String work;
+
     @Enumerated(EnumType.STRING)
     private Sex sex;
+    
+    private String interests;
 
 
     @OneToOne

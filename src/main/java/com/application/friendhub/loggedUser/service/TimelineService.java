@@ -1,4 +1,4 @@
-package com.application.friendhub.service;
+package com.application.friendhub.loggedUser.service;
 
 import com.application.friendhub.Entity.UserDetailsEntity;
 import com.application.friendhub.Entity.TimelineEntity;
