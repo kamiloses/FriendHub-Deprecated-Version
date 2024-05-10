@@ -1,4 +1,4 @@
-package com.application.friendhub.dto;
+package com.application.friendhub.registrationProcess.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,5 @@
-package com.application.friendhub.fronted;
+package com.application.friendhub.registrationProcess.other;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

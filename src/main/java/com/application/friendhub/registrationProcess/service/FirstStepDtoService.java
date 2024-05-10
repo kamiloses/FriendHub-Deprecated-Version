@@ -1,11 +1,10 @@
-package com.application.friendhub.registrationProcess;
+package com.application.friendhub.registrationProcess.service;
 
 import com.application.friendhub.Entity.UserDetailsEntity;
 import com.application.friendhub.Entity.UserEntity;
-import com.application.friendhub.Repository.UserRepository;
-import com.application.friendhub.dto.DateOfBirth;
 import com.application.friendhub.dto.Role;
-import com.application.friendhub.fronted.SelectOptionService;
+import com.application.friendhub.registrationProcess.other.DateOfBirth;
+import com.application.friendhub.registrationProcess.dto.FirstStepDto;
 import org.springframework.stereotype.Service;
 
 @Service

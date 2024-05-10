@@ -1,7 +1,7 @@
-package com.application.friendhub.registrationProcess;
+package com.application.friendhub.registrationProcess.dto;
 
-import com.application.friendhub.dto.DateOfBirth;
 import com.application.friendhub.dto.Role;
+import com.application.friendhub.registrationProcess.other.DateOfBirth;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;

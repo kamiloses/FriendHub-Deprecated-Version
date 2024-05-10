@@ -1,7 +1,8 @@
-package com.application.friendhub.fronted;
+package com.application.friendhub.registrationProcess.service;
 
-import com.application.friendhub.registrationProcess.FirstStepDto;
-import com.application.friendhub.dto.Months;
+import com.application.friendhub.registrationProcess.other.Months;
+import com.application.friendhub.registrationProcess.other.SelectOption;
+import com.application.friendhub.registrationProcess.dto.FirstStepDto;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;

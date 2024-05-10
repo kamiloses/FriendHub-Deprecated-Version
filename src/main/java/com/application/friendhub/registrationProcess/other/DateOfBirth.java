@@ -1,4 +1,4 @@
-package com.application.friendhub.dto;
+package com.application.friendhub.registrationProcess.other;
 
 import jakarta.persistence.JoinColumn;
 import lombok.*;

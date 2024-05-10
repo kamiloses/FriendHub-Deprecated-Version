@@ -1,14 +1,14 @@
-package com.application.friendhub.controller;
+package com.application.friendhub.registrationProcess.controller;
 
 import com.application.friendhub.EmailSender.EmailServiceImpl;
 import com.application.friendhub.Entity.UserDetailsEntity;
 import com.application.friendhub.Entity.UserEntity;
 import com.application.friendhub.Repository.UserDetailsRepository;
 import com.application.friendhub.Repository.UserRepository;
-import com.application.friendhub.dto.SecondStepDto;
-import com.application.friendhub.registrationProcess.FirstStepDto;
-import com.application.friendhub.fronted.SelectOptionService;
-import com.application.friendhub.registrationProcess.FirstStepDtoService;
+import com.application.friendhub.registrationProcess.dto.FirstStepDto;
+import com.application.friendhub.registrationProcess.service.FirstStepDtoService;
+import com.application.friendhub.registrationProcess.dto.SecondStepDto;
+import com.application.friendhub.registrationProcess.service.SelectOptionService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
