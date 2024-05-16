@@ -41,6 +41,7 @@ public class HomeController {
     private final AddFriendsService addFriendsService;
     private FriendsListRepository friendsListRepository;
 
+
     public HomeController(TimelineService timelineService, TimelineRepository timelineRepository, UserDetailsRepository userDetailsRepository, ProfileDtoService profileDtoService, UserRepository userRepository, FriendsService friendsService, AddFriendsService addFriendsService, FriendsListRepository friendsListRepository) {
         this.timelineService = timelineService;
         this.userDetailsRepository = userDetailsRepository;
@@ -61,6 +62,8 @@ public class HomeController {
         UserDetailsEntity userDetails = userDetailsRepository.findUserDetailsEntityByUserEntity_Email(email);
         List<FriendsListEntity> user = userRepository.findAllFriendListEntityById(userEntity.getId());
         /*List<CommentsEntity> commentsE = timelineRepository.findCommentsE(allPosts);*/
+
+
 
         model.addAttribute("allPosts", allPosts);
         model.addAttribute("userDetails", userDetails);
@@ -130,7 +133,6 @@ public class HomeController {
     @GetMapping("/friendhub/searchFriends")
     public String searchFriends(Model model, String fullName) {
         List<UserDetailsEntity> user = friendsService.findUserByNameOrSurname(fullName);
-
         model.addAttribute("foundUsers", user);
 
 
@@ -157,25 +159,29 @@ public class HomeController {
         friendsListRepository.save(invitedAccount);
         friendsListRepository.save(invitingAccount);
 
+
+
         return "redirect:/friendhub/searchFriends";
     }
 
 
     @GetMapping("/profile")
-    public String searchedProfile(@RequestParam String firstName,@RequestParam String lastName, Model model) {
-        List<TimelineEntity> posts = timelineRepository.findTimelineEntitiesWithMatchingAuthor(firstName, lastName);
-        model.addAttribute("allPosts",posts); //todo zamień na wyszukiwanie poprzez email
+    public String searchedProfile(@RequestParam String firstName,@RequestParam String lastName, @RequestParam Long id, Model model) {
+       List<TimelineEntity> posts=timelineRepository.findTimelineEntityByUser_Id(id);
+
+
+        List<TimelineEntity> postss = timelineRepository.findTimelineEntitiesWithMatchingAuthor(firstName, lastName);
+        model.addAttribute("allPosts",posts);
 
         return "html/somebodysProfile";
     }
 
-    @PostMapping("/home/removePost")
+    @PostMapping("/home/removePost")//todo zmien na delete mapping
     public String removePost(@ModelAttribute TimelineDto timelineDto){
         timelineRepository.deleteById(timelineDto.getId());
 
 
     return "redirect:/home";}
-
 
 
 
@@ -189,9 +195,26 @@ public class HomeController {
 
 
 return null;}*/
+@PostMapping("/friendhub/upload")
+public String upload(@ModelAttribute TimelineDto timelineDto){
+    String name = SecurityContextHolder.getContext().getAuthentication().getName();
+    UserEntity user = userRepository.findUserEntityByEmail(name).orElseThrow(() -> new UsernameNotFoundException("as"));
+    TimelineEntity post = timelineRepository.findById(timelineDto.getId()).orElseThrow(()->new UsernameNotFoundException("not found"));
 
+    TimelineDto timelineDto1 = timelineService.timelineEntityToDto(post);
+    timelineDto1.setId(user.getId());
+     timelineDto1.setUser(post.getUser().getId());
+    timelineRepository.save(timelineService.timelineDtoToEntity(timelineDto1));
+
+
+
+return "redirect:/profile";}
 
 
 
 
 }
+
+
+
+
