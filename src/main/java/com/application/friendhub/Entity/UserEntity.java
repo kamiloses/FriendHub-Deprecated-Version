@@ -12,7 +12,6 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @RequiredArgsConstructor
-@ToString
 public class UserEntity {
 
     @Id
@@ -34,6 +33,8 @@ public class UserEntity {
     @OneToMany(mappedBy = "user")
     private List<TimelineEntity> timelines;
 
+    @OneToMany(mappedBy = "connectionToYourOwnAccount")
+    private List<FriendsListEntity> connectionToYourOwnAccount;
 
 
 //todo zaimplementować poten interface userDetails i zaimplementować is non expired itp

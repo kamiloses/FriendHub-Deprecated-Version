@@ -1,12 +1,13 @@
 package com.application.friendhub.Entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.Date;
 
 @Entity
 @Data
+@NoArgsConstructor
 public class FriendsListEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,5 +18,11 @@ public class FriendsListEntity {
 
 
         @ManyToOne
+
         private UserEntity userId;
+
+
+        @ManyToOne
+    private UserEntity connectionToYourOwnAccount;
+
 }

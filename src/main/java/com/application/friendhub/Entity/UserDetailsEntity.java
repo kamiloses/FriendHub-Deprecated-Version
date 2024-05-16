@@ -20,8 +20,10 @@ public class UserDetailsEntity {
     private String firstName;
     private String lastName;
 
+
     @Embedded
     private DateOfBirth date;
+
 
     private String localization;
 
