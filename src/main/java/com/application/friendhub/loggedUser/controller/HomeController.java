@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
@@ -37,9 +38,11 @@ public class HomeController {
     private FriendsListRepository friendsListRepository;
 
     private CommentService commentService;
+    private LikeService likeService;
+    private LikeRepository likeRepository;
 
 
-    public HomeController(CommentsRepository commentsRepository, TimelineService timelineService, TimelineRepository timelineRepository, UserDetailsRepository userDetailsRepository, ProfileDtoService profileDtoService, UserRepository userRepository, FriendsService friendsService, AddFriendsService addFriendsService, FriendsListRepository friendsListRepository, CommentService commentService) {
+    public HomeController(CommentsRepository commentsRepository, TimelineService timelineService, TimelineRepository timelineRepository, UserDetailsRepository userDetailsRepository, ProfileDtoService profileDtoService, UserRepository userRepository, FriendsService friendsService, AddFriendsService addFriendsService, FriendsListRepository friendsListRepository, CommentService commentService, LikeService likeService, LikeRepository likeRepository) {
         this.commentsRepository = commentsRepository;
         this.timelineService = timelineService;
         this.userDetailsRepository = userDetailsRepository;
@@ -50,6 +53,8 @@ public class HomeController {
         this.addFriendsService = addFriendsService;
         this.friendsListRepository = friendsListRepository;
         this.commentService = commentService;
+        this.likeService = likeService;
+        this.likeRepository = likeRepository;
     }
 
 
@@ -61,13 +66,24 @@ public class HomeController {
         UserDetailsEntity userDetails = userDetailsRepository.findUserDetailsEntityByUserEntity_Email(email);
         List<FriendsListEntity> user = userRepository.findAllFriendListEntityById(userEntity.getId());
         /*List<CommentsEntity> commentsE = timelineRepository.findCommentsE(allPosts);*/
+        String firstNameAndLastName=userDetails.getFirstName() + " " + userDetails.getLastName();
 
 
-
+        model.addAttribute("nameAndSurname",firstNameAndLastName);
         model.addAttribute("allPosts", allPosts);
         model.addAttribute("userDetails", userDetails);
-
         model.addAttribute("allFriends", user);
+
+
+        List<Long> timelineIds = allPosts.stream()
+                .map(TimelineEntity::getId)
+                .collect(Collectors.toList());
+
+        List<LikesEntity> likesEntities = likeRepository.findLikesByTimelineEntities(timelineIds);
+        System.out.println(likesEntities);
+        model.addAttribute("likedPostIds",likesEntities);
+
+
 
         return "html/mainPaige";
     }
@@ -190,16 +206,7 @@ public class HomeController {
 
 
 
-/*    @PostMapping("/addComment")//todo zmień endpoint
-    public String addComment(@ModelAttribute CommentDto commentDto){
 
-
-
-
-
-
-
-return null;}*/
 @PostMapping("/friendhub/upload")
 public String upload(@ModelAttribute TimelineDto timelineDto){
     TimelineEntity savedEntity = timelineRepository.findById(timelineDto.getId()).orElseThrow(() -> new UsernameNotFoundException("not found"));
@@ -225,10 +232,41 @@ return "redirect:/home";
 
 @PostMapping("/home/addLike")
     public String addLike(@ModelAttribute LikeDto likeDto) {
+    TimelineEntity timelineEntity = timelineRepository.findById(likeDto.getLikesId()).orElseThrow(() -> new UsernameNotFoundException("not found"));
+
+    String name = SecurityContextHolder.getContext().getAuthentication().getName();
+    UserEntity user = userRepository.findUserEntityByEmail(name).orElseThrow(() -> new UsernameNotFoundException("not found"));
+
+    if ( likeRepository.existsByLikeEntityId(likeDto.getLikesId())&&userRepository.existsById(user.getId())) {
+        LikesEntity likesEntity = likeRepository.findByLikeEntity_IdAndUserEntity_Id(likeDto.getLikesId(), user.getId());
+        likeRepository.delete(likesEntity);
+
+    }
+   else {
+        LikesEntity likesEntity = likeService.likeDtoToEntity(likeDto);
+        likeRepository.save(likesEntity);
+    }
 
 
 
-return "redirect:/home";}
+
+
+    return "redirect:/home";}
+
+
+
+    @PostMapping("/home/addReply")
+    public String addReply(@ModelAttribute CommentDto commentDto, @RequestParam Long parentCommentId) {
+        CommentsEntity parentComment = commentsRepository.findById(parentCommentId)
+                .orElseThrow(() -> new RuntimeException("Parent comment not found"));
+
+        CommentsEntity reply = commentService.commentDtoToEntity(commentDto);
+        reply.setParentComment(parentComment);
+        reply.setTimelineEntity(parentComment.getTimelineEntity());
+        commentsRepository.save(reply);
+
+        return "redirect:/home";
+    }
 
 
 
