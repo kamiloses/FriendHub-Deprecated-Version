@@ -19,6 +19,8 @@ public class TimelineEntity {
 
     private String author;
 
+    private String uploadedUser;
+
     @Column(length = 1337)
     private String post;
 
@@ -33,12 +35,15 @@ public class TimelineEntity {
 
 
 
-    @ManyToMany(mappedBy = "likesEntity")
-    @Column(name = "like_id")
+   /* @ManyToMany(mappedBy = "likesEntity")
+    @Column(name = "like_id")*/
+
+
+    @OneToMany(mappedBy = "likeEntity",cascade = CascadeType.REMOVE)
     private List<LikesEntity> likesEntities;
 
-    @ManyToMany(mappedBy = "commentsEntity")
-    @Column(name = "comments_id" )
+
+    @OneToMany(mappedBy = "timelineEntity", cascade = CascadeType.REMOVE)
     private List<CommentsEntity> commentsEntity;
 
 

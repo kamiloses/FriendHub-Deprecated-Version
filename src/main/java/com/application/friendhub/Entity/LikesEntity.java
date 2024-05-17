@@ -17,14 +17,13 @@ public class LikesEntity {
 
     private String lastName;
 
-    @ManyToMany
-    @Column(name = "timeline_id")
-    @JoinTable(
-            name = "likes_timeline",
-            joinColumns = @JoinColumn(name ="like_id"),
-            inverseJoinColumns = @JoinColumn(name = "timeline_id"))
-    private List<TimelineEntity> likesEntity;
 
+    @ManyToOne
+    TimelineEntity likeEntity;
+
+
+    @ManyToOne
+    UserEntity userEntity;
 
 
 }

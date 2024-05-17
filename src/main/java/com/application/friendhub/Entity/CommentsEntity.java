@@ -2,7 +2,9 @@ package com.application.friendhub.Entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.Cascade;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -22,13 +24,32 @@ public class CommentsEntity {
 
     private Date dateOfPublication;
 
-    @ManyToMany
-    @Column(name = "timeline_id")
-    @JoinTable(
-            name = "comments_timeline",
-            joinColumns = @JoinColumn(name ="column_id"),
-            inverseJoinColumns = @JoinColumn(name = "timeline_id"))
-    private List<TimelineEntity> commentsEntity;
+    @ManyToOne
+
+    private TimelineEntity timelineEntity;
+
+
+
+    @ManyToOne
+    UserEntity userEntity;
+
+
+
+
+
+    @ManyToOne
+    @JoinColumn(name = "parent_comment_id")
+    private CommentsEntity parentComment;
+
+
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
+    private List<CommentsEntity> replies = new ArrayList<>();
 
 
 }
+
+
+
+
+
+

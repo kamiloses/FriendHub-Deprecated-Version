@@ -37,6 +37,8 @@ public class UserDetailsEntity {
     private String interests;
 
 
+
+
     @OneToOne
     private UserEntity userEntity;
 

@@ -38,11 +38,18 @@ public class UserEntity {
 
 
 //todo zaimplementować poten interface userDetails i zaimplementować is non expired itp
-   /* @OneToOne(mappedBy = "userEntity")
-    @OneToMany(mappedBy = "userEntity")
+    @OneToOne(mappedBy = "userEntity")
     private UserDetailsEntity userDetailsEntity;
-    private List<MessagesEntity> message;
-*/
+
+
+    @OneToMany(mappedBy = "userEntity",cascade = CascadeType.REMOVE)
+    private List<LikesEntity> likesEntities;
+
+
+    @OneToMany(mappedBy = "userEntity",cascade = CascadeType.REMOVE)
+    private List<CommentsEntity> commentEntity;
+
+
 
 }
 
