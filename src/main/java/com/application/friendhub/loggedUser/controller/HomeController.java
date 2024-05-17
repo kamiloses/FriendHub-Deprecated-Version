@@ -1,18 +1,13 @@
 package com.application.friendhub.loggedUser.controller;
 
 import com.application.friendhub.Entity.*;
-import com.application.friendhub.Repository.FriendsListRepository;
-import com.application.friendhub.Repository.TimelineRepository;
-import com.application.friendhub.Repository.UserDetailsRepository;
-import com.application.friendhub.Repository.UserRepository;
+import com.application.friendhub.Repository.*;
+import com.application.friendhub.dto.LikeDto;
 import com.application.friendhub.dto.TimelineDto;
 import com.application.friendhub.loggedUser.dto.CommentDto;
 import com.application.friendhub.loggedUser.dto.FriendsDto;
 import com.application.friendhub.loggedUser.dto.ProfileDto;
-import com.application.friendhub.loggedUser.service.AddFriendsService;
-import com.application.friendhub.loggedUser.service.FriendsService;
-import com.application.friendhub.loggedUser.service.ProfileDtoService;
-import com.application.friendhub.loggedUser.service.TimelineService;
+import com.application.friendhub.loggedUser.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,7 +22,7 @@ import java.util.Optional;
 @Slf4j
 public class HomeController {
 
-
+    private final CommentsRepository commentsRepository;
     private final TimelineService timelineService;
     private final TimelineRepository timelineRepository;
 
@@ -41,8 +36,11 @@ public class HomeController {
     private final AddFriendsService addFriendsService;
     private FriendsListRepository friendsListRepository;
 
+    private CommentService commentService;
 
-    public HomeController(TimelineService timelineService, TimelineRepository timelineRepository, UserDetailsRepository userDetailsRepository, ProfileDtoService profileDtoService, UserRepository userRepository, FriendsService friendsService, AddFriendsService addFriendsService, FriendsListRepository friendsListRepository) {
+
+    public HomeController(CommentsRepository commentsRepository, TimelineService timelineService, TimelineRepository timelineRepository, UserDetailsRepository userDetailsRepository, ProfileDtoService profileDtoService, UserRepository userRepository, FriendsService friendsService, AddFriendsService addFriendsService, FriendsListRepository friendsListRepository, CommentService commentService) {
+        this.commentsRepository = commentsRepository;
         this.timelineService = timelineService;
         this.userDetailsRepository = userDetailsRepository;
         this.profileDtoService = profileDtoService;
@@ -51,6 +49,7 @@ public class HomeController {
         this.timelineRepository = timelineRepository;
         this.addFriendsService = addFriendsService;
         this.friendsListRepository = friendsListRepository;
+        this.commentService = commentService;
     }
 
 
@@ -76,8 +75,8 @@ public class HomeController {
 
     @PostMapping("/home/add")
     public String addPostOnHomeSide(@ModelAttribute TimelineDto timelineDto) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        TimelineEntity timelineEntity = timelineService.timelineDtoToEntity(timelineDto);
+        TimelineEntity timelineEntity = timelineService.addPostEntityToDto(timelineDto);
+
         timelineRepository.save(timelineEntity);
         log.error("saved");
 
@@ -169,6 +168,12 @@ public class HomeController {
     public String searchedProfile(@RequestParam String firstName,@RequestParam String lastName, @RequestParam Long id, Model model) {
        List<TimelineEntity> posts=timelineRepository.findTimelineEntityByUser_Id(id);
 
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity userEntity = userRepository.findUserEntityByEmail(email).orElseThrow(() -> new UsernameNotFoundException("not found"));
+        List<FriendsListEntity> user = userRepository.findAllFriendListEntityById(userEntity.getId());
+
+       model.addAttribute("allFriends", user);
+
 
         List<TimelineEntity> postss = timelineRepository.findTimelineEntitiesWithMatchingAuthor(firstName, lastName);
         model.addAttribute("allPosts",posts);
@@ -197,18 +202,33 @@ public class HomeController {
 return null;}*/
 @PostMapping("/friendhub/upload")
 public String upload(@ModelAttribute TimelineDto timelineDto){
-    String name = SecurityContextHolder.getContext().getAuthentication().getName();
-    UserEntity user = userRepository.findUserEntityByEmail(name).orElseThrow(() -> new UsernameNotFoundException("as"));
-    TimelineEntity post = timelineRepository.findById(timelineDto.getId()).orElseThrow(()->new UsernameNotFoundException("not found"));
-
-    TimelineDto timelineDto1 = timelineService.timelineEntityToDto(post);
-    timelineDto1.setId(user.getId());
-     timelineDto1.setUser(post.getUser().getId());
-    timelineRepository.save(timelineService.timelineDtoToEntity(timelineDto1));
+    TimelineEntity savedEntity = timelineRepository.findById(timelineDto.getId()).orElseThrow(() -> new UsernameNotFoundException("not found"));
+    timelineRepository.save(timelineService.timelineDtoToEntity(timelineDto));
 
 
 
-return "redirect:/profile";}
+    return "redirect:/profile"+"?firstName=" + savedEntity.getUser().getUserDetailsEntity().getFirstName() +
+            "&lastName=" + savedEntity.getUser().getUserDetailsEntity().getLastName() +
+            "&id=" + savedEntity.getUser().getId();}
+
+
+@PostMapping("/home/addComment")//todo zamien urk
+    public String addComment(@ModelAttribute CommentDto commentDto) {
+
+    CommentsEntity commentsEntity = commentService.commentDtoToEntity(commentDto);
+    commentsRepository.save(commentsEntity);
+
+
+
+return "redirect:/home";
+}
+
+@PostMapping("/home/addLike")
+    public String addLike(@ModelAttribute LikeDto likeDto) {
+
+
+
+return "redirect:/home";}
 
 
 
