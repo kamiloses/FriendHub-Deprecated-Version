@@ -80,6 +80,7 @@ public class HomeController {
                 .collect(Collectors.toList());
 
         List<LikesEntity> likesEntities = likeRepository.findLikesByTimelineEntities(timelineIds);
+
         System.out.println(likesEntities);
         model.addAttribute("likedPostIds",likesEntities);
 
@@ -180,22 +181,8 @@ public class HomeController {
     }
 
 
-    @GetMapping("/profile")
-    public String searchedProfile(@RequestParam String firstName,@RequestParam String lastName, @RequestParam Long id, Model model) {
-       List<TimelineEntity> posts=timelineRepository.findTimelineEntityByUser_Id(id);
-
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserEntity userEntity = userRepository.findUserEntityByEmail(email).orElseThrow(() -> new UsernameNotFoundException("not found"));
-        List<FriendsListEntity> user = userRepository.findAllFriendListEntityById(userEntity.getId());
-
-       model.addAttribute("allFriends", user);
 
 
-        List<TimelineEntity> postss = timelineRepository.findTimelineEntitiesWithMatchingAuthor(firstName, lastName);
-        model.addAttribute("allPosts",posts);
-
-        return "html/somebodysProfile";
-    }
 
     @PostMapping("/home/removePost")//todo zmien na delete mapping
     public String removePost(@ModelAttribute TimelineDto timelineDto){
@@ -237,7 +224,7 @@ return "redirect:/home";
     String name = SecurityContextHolder.getContext().getAuthentication().getName();
     UserEntity user = userRepository.findUserEntityByEmail(name).orElseThrow(() -> new UsernameNotFoundException("not found"));
 
-    if ( likeRepository.existsByLikeEntityId(likeDto.getLikesId())&&userRepository.existsById(user.getId())) {
+    if ( likeRepository.existsByLikeEntityId(likeDto.getLikesId())&&userRepository.existsById(user.getId())&&likeRepository.existsByUserEntityId(user.getId())) { //todo sprawdz czy nie usunąc likeRepository.existsByLikeEntityId(likeDto.getLikesId()
         LikesEntity likesEntity = likeRepository.findByLikeEntity_IdAndUserEntity_Id(likeDto.getLikesId(), user.getId());
         likeRepository.delete(likesEntity);
 
@@ -268,7 +255,14 @@ return "redirect:/home";
         return "redirect:/home";
     }
 
+  /*  @PostMapping("/home/removeReply")
+    public String removeReply(@ModelAttribute CommentDto commentDto, @RequestParam Long parentCommentId) {
 
+
+
+
+    }
+*/
 
 
 }
