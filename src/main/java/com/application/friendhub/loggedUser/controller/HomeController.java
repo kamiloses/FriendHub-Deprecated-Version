@@ -15,8 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -66,28 +65,42 @@ public class HomeController {
         UserDetailsEntity userDetails = userDetailsRepository.findUserDetailsEntityByUserEntity_Email(email);
         List<FriendsListEntity> user = userRepository.findAllFriendListEntityById(userEntity.getId());
         /*List<CommentsEntity> commentsE = timelineRepository.findCommentsE(allPosts);*/
-        String firstNameAndLastName=userDetails.getFirstName() + " " + userDetails.getLastName();
+        String firstNameAndLastName = userDetails.getFirstName() + " " + userDetails.getLastName();
 
 
-        model.addAttribute("nameAndSurname",firstNameAndLastName);
+        model.addAttribute("nameAndSurname", firstNameAndLastName);
         model.addAttribute("allPosts", allPosts);
         model.addAttribute("userDetails", userDetails);
         model.addAttribute("allFriends", user);
 
-
-        List<Long> timelineIds = allPosts.stream()
+//        model.addAttribute("image", Base64.getEncoder().encodeToString(userDetails.getProfilePicture()));
+    /*    List<Long> timelineIds = allPosts.stream()
                 .map(TimelineEntity::getId)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
 
-        List<LikesEntity> likesEntities = likeRepository.findLikesByTimelineEntities(timelineIds);
-
-        System.out.println(likesEntities);
-        model.addAttribute("likedPostIds",likesEntities);
+        List<LikesEntity> likesEntities = likeRepository.findLikesByTimelineEntities(allPosts);
+        System.out.println(likesEntities.size());
 
 
+
+        Map<Long, Integer> postLikesCountMap = new HashMap<>();
+        for (TimelineEntity post : allPosts) {
+            int likesCount = 0;
+            for (LikesEntity like : likesEntities) {
+                if (like.getLikeEntity().getId().equals(post.getId())) {
+                    likesCount++;
+                }
+            }
+            postLikesCountMap.put(post.getId(), likesCount);
+        }
+        log.error(postLikesCountMap.toString());
+
+        System.out.println(postLikesCountMap.size());
+        model.addAttribute("postLikesCountMap", postLikesCountMap);
 
         return "html/mainPaige";
     }
+
 
 
     @PostMapping("/home/add")
@@ -131,11 +144,6 @@ public class HomeController {
 */
 
 
-
-
-
-
-
     @PostMapping("/friendhub/profile/modifyProfile")
     public String modifyProfile(ProfileDto profileDto) {
         UserDetailsEntity userDetailsEntity = profileDtoService.profileDtoToUserDetailsEntity(profileDto);
@@ -176,69 +184,61 @@ public class HomeController {
         friendsListRepository.save(invitingAccount);
 
 
-
         return "redirect:/friendhub/searchFriends";
     }
 
 
-
-
-
     @PostMapping("/home/removePost")//todo zmien na delete mapping
-    public String removePost(@ModelAttribute TimelineDto timelineDto){
+    public String removePost(@ModelAttribute TimelineDto timelineDto) {
         timelineRepository.deleteById(timelineDto.getId());
 
 
-    return "redirect:/home";}
+        return "redirect:/home";
+    }
 
 
+    @PostMapping("/friendhub/upload")
+    public String upload(@ModelAttribute TimelineDto timelineDto) {
+        TimelineEntity savedEntity = timelineRepository.findById(timelineDto.getId()).orElseThrow(() -> new UsernameNotFoundException("not found"));
+        timelineRepository.save(timelineService.timelineDtoToEntity(timelineDto));
 
 
-@PostMapping("/friendhub/upload")
-public String upload(@ModelAttribute TimelineDto timelineDto){
-    TimelineEntity savedEntity = timelineRepository.findById(timelineDto.getId()).orElseThrow(() -> new UsernameNotFoundException("not found"));
-    timelineRepository.save(timelineService.timelineDtoToEntity(timelineDto));
+        return "redirect:/profile" + "?firstName=" + savedEntity.getUser().getUserDetailsEntity().getFirstName() +
+                "&lastName=" + savedEntity.getUser().getUserDetailsEntity().getLastName() +
+                "&id=" + savedEntity.getUser().getId();
+    }
 
 
-
-    return "redirect:/profile"+"?firstName=" + savedEntity.getUser().getUserDetailsEntity().getFirstName() +
-            "&lastName=" + savedEntity.getUser().getUserDetailsEntity().getLastName() +
-            "&id=" + savedEntity.getUser().getId();}
-
-
-@PostMapping("/home/addComment")//todo zamien urk
+    @PostMapping("/home/addComment")//todo zamien urk
     public String addComment(@ModelAttribute CommentDto commentDto) {
 
-    CommentsEntity commentsEntity = commentService.commentDtoToEntity(commentDto);
-    commentsRepository.save(commentsEntity);
+        CommentsEntity commentsEntity = commentService.commentDtoToEntity(commentDto);
+        commentsRepository.save(commentsEntity);
 
 
+        return "redirect:/home";
+    }
 
-return "redirect:/home";
-}
-
-@PostMapping("/home/addLike")
+    @PostMapping("/home/addLike")
     public String addLike(@ModelAttribute LikeDto likeDto) {
-    TimelineEntity timelineEntity = timelineRepository.findById(likeDto.getLikesId()).orElseThrow(() -> new UsernameNotFoundException("not found"));
+        TimelineEntity timelineEntity = timelineRepository.findById(likeDto.getLikesId()).orElseThrow(() -> new UsernameNotFoundException("not found"));
 
-    String name = SecurityContextHolder.getContext().getAuthentication().getName();
-    UserEntity user = userRepository.findUserEntityByEmail(name).orElseThrow(() -> new UsernameNotFoundException("not found"));
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity user = userRepository.findUserEntityByEmail(name).orElseThrow(() -> new UsernameNotFoundException("not found"));
 
-    if ( likeRepository.existsByLikeEntityId(likeDto.getLikesId())&&userRepository.existsById(user.getId())&&likeRepository.existsByUserEntityId(user.getId())) { //todo sprawdz czy nie usunąc likeRepository.existsByLikeEntityId(likeDto.getLikesId()
-        LikesEntity likesEntity = likeRepository.findByLikeEntity_IdAndUserEntity_Id(likeDto.getLikesId(), user.getId());
-        likeRepository.delete(likesEntity);
+//        if (likeRepository.existsByLikeEntityId(likeDto.getLikesId()) && userRepository.existsById(user.getId()) && likeRepository.existsByUserEntityId(user.getId())) { //todo sprawdz czy nie usunąc likeRepository.existsByLikeEntityId(likeDto.getLikesId()
+          if (likeRepository.existsByLikeEntityIdAndUserEntityId(likeDto.getLikesId(),user.getId())&& userRepository.existsById(user.getId())){
+            LikesEntity likesEntity = likeRepository.findByLikeEntity_IdAndUserEntity_Id(likeDto.getLikesId(), user.getId());
+            likeRepository.delete(likesEntity);
 
+        } else {
+            LikesEntity likesEntity = likeService.likeDtoToEntity(likeDto);
+            likeRepository.save(likesEntity);
+        }
+
+
+        return "redirect:/home";
     }
-   else {
-        LikesEntity likesEntity = likeService.likeDtoToEntity(likeDto);
-        likeRepository.save(likesEntity);
-    }
-
-
-
-
-
-    return "redirect:/home";}
 
 
 
@@ -263,8 +263,6 @@ return "redirect:/home";
 
     }
 */
-
-
 }
 
 
