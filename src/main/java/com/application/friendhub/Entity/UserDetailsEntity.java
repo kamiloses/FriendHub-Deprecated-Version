@@ -36,7 +36,9 @@ public class UserDetailsEntity {
     
     private String interests;
 
-
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] profilePicture;
 
 
     @OneToOne
