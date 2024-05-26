@@ -41,8 +41,8 @@ public class WebSocketEventListener {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
        String loggedUser = headerAccessor.getUser().getName();
        UserEntity userEntity = userRepository.findUserEntityByEmail(loggedUser).orElseThrow(() -> new RuntimeException("User not found"));
-         availableUserService.addUser(userEntity.getEmail(),userEntity.getId());
-
+      /*   availableUserService.addUser(userEntity.getId(),"online");*/
+       messagingTemplate.convertAndSend("/topic/public", new AvailableUserService(userEntity.getId(), "CONNECTED"));
 
         log.error(userEntity.getUserDetailsEntity().getFirstName() +" "+  userEntity.getUserDetailsEntity().getLastName() + " has been connected");
 
@@ -58,7 +58,8 @@ public class WebSocketEventListener {
 
         String loggedUser = headerAccessor.getUser().getName();
         UserEntity userEntity = userRepository.findUserEntityByEmail(loggedUser).orElseThrow(() -> new RuntimeException("User not found"));
-        availableUserService.removeUser(userEntity.getEmail(),userEntity.getId());
+        messagingTemplate.convertAndSend("/topic/public", new AvailableUserService(userEntity.getId(), "DISCONNECTED"));
+
 
         log.error(userEntity.getUserDetailsEntity().getFirstName() +" "+  userEntity.getUserDetailsEntity().getLastName() + " has been disconnected");
 

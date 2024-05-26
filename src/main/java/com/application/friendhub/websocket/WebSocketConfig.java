@@ -21,7 +21,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app");
         registry.enableSimpleBroker("/topic","/queue");
-     /*   registry.setUserDestinationPrefix("/user");*/
+     /*   registry.setUserDestinationPrefix("/user");*/ //s
+
+
+/*
+        registry.enableStompBrokerRelay("/queue").setRelayHost("moose.rmq.cloudamqp.com").setRelayPort(5672).setClientLogin("cgelrlqv")
+                .setClientPasscode("GiNECvP6jLcC4osV0XuXl5O0OyAAcAoU");
+*/
 
     }
 
