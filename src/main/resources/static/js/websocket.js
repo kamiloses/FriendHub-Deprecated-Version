@@ -1,7 +1,6 @@
 let stompClient=null
 let chatId=null;
 let currentSubscription = null;
-let nachwile=null;
 function connectToWebSocket() {
 
 
@@ -9,7 +8,7 @@ function connectToWebSocket() {
 
 
     const socket = new SockJS('http://localhost:8080/ws');
-     stompClient= Stomp.over(socket);
+    stompClient= Stomp.over(socket);
 
     stompClient.connect({}, function (frame) {
         /*stompClient.send("/app/chat.availableUser")*////todo raczej usunąć tą linijke*/
@@ -28,6 +27,8 @@ function connectToWebSocket() {
         });*/
 
 
+
+
     });
 
 }
@@ -40,8 +41,8 @@ function updateUserStatus(id,status) {
     var userElements = document.querySelectorAll('ul li[data-userid]');
     userElements.forEach(element => {
         if ((id.toString() === element.getAttribute('data-userid'))&&status.toString()==="CONNECTED") {
-                console.log("uzytkownik :" + id);
-                element.classList.add('online');
+            console.log("uzytkownik :" + id);
+            element.classList.add('online');
         }  if ((id.toString() === element.getAttribute('data-userid'))&&status.toString()==="DISCONNECTED"){
             console.log("uzytkownik :" + id);
             element.classList.remove('online')
@@ -59,58 +60,37 @@ function updateUserStatus(id,status) {
 
 }
 
-        /*   if (userElement) {
-             /!*  if (status === 'CONNECTED') {
-                   userElement.classList.add('active');
-                   userElement.classList.remove('inactive');
-               } else if (status === 'DISCONNECTED') {
-                   userElement.classList.add('inactive');
-                   userElement.classList.remove('active');
-               }*!/
-             /!*  if (userId === userElement) {*!/
-               if (userElement) {
-                   userElement.classList.add('red-color')}
-
-       */
-        /*        } else {*/
-
-
-
-
-/*function isUserOnline(){
-    var userElements =document.querySelectorAll('ul li[data-userid]')
-    userElements.forEach(element => {
-        if (element.getAttribute('data-userid')!==1){
-
-
-            element.classList.add('red-background');
-
-        }
-    });
-  }*/
 
 
 
 
 
 
-// firstName, lastName,
-function openChatWindow(friendId,messageId) {
+function openChatWindow(friendId,messageId,element) {//todo  przypisz potem friendId do chatId zamiast messageId
     chatId=messageId
+
+    const firstName = element.getAttribute('data-first-name');
+    const lastName = element.getAttribute('data-last-name');
 
     console.log("JEST TO ID "+messageId)
     document.getElementById('chatWindow').style.display = 'flex';
     const socket = new SockJS('http://localhost:8080/ws');
-     stompClient = Stomp.over(socket);
+    stompClient = Stomp.over(socket);
 
     if (currentSubscription) {
         currentSubscription.unsubscribe();
     }
 
 
+
+
+
+
+
+
     stompClient.connect({}, function(frame) {
         console.log('Connected: ' + frame);
-       currentSubscription= stompClient.subscribe( '/queue/messages/user/'+ messageId, function(message) {
+        currentSubscription= stompClient.subscribe( '/queue/messages/user/'+ messageId, function(message) {
             // displayMessage('Server: ' + message.body);
             displayMessage('Server: ' + message.body);
 
@@ -118,10 +98,19 @@ function openChatWindow(friendId,messageId) {
     });
 
 
-    // var profileLink = '/profile?firstName=' + firstName + '&lastName=' + lastName + '&id=' + friendId;
+     var profileLink = '/profile?firstName=' + firstName + '&lastName=' + lastName + '&id=' + friendId;
 
     var friendLink = document.createElement('a');
-    // friendLink.innerText = 'Znajomy ' + firstName + ' ' + lastName;
+     friendLink.innerText = 'Znajomy ' + firstName + ' ' + lastName;
+    friendLink.href = '/profile?firstName=' + firstName + '&lastName=' + lastName + '&id=' + friendId;
+
+
+    friendLink.className = 'friend-link';
+
+    document.body.appendChild(friendLink);
+
+
+
 
     var chatFriendName = document.getElementById('chatFriendName');
     chatFriendName.innerHTML = '';
@@ -133,34 +122,26 @@ function sendMessage() {
     var messageInput = document.getElementById('messageInput');
     var message = messageInput.value;
     stompClient.send("/app/chat.sendMessage/"+chatId, {}, JSON.stringify({content: message}));
-    /*displayMessage('You: ' + message);*/
-    messageInput.value = ''; // Clear the input field after sending
+
+    messageInput.value = '';
 }
 
 
 
 
 
-// stompClient.connect({}, function(frame) {
-//     console.log('Connected: ' + frame);
-//     stompClient.subscribe('/topic/public', function(message) {
-//         displayMessage('Server: ' + message.body);
-//     });
-// });
 
-// Function to send messages to the server
+function displayMessage(message) {
+    const chatContent = document.getElementById('chatContent');
+    const messageElement = document.createElement('div');
+
+    messageElement.textContent = message;
+
+    chatContent.appendChild(messageElement);
 
 
 
-// Function to display messages in the HTML
-    function displayMessage(message) {
-        const chatContent = document.getElementById('chatContent');
-        const messageElement = document.createElement('div');
-        messageElement.textContent = message;
-        /*messagesDiv.appendChild(messageElement);*/
-        // chatContent.insertBefore(messageElement,chatContent.firstChild)
-        chatContent.appendChild(messageElement);
-    }
+}
 
 function closeMessageWindow() {
 
@@ -170,12 +151,3 @@ function closeMessageWindow() {
 
 
 }
-
-
-
-
-
-
-
-
-
