@@ -1,73 +1,62 @@
-let stompClient=null
-let chatId=null;
+let stompClient = null
+let chatId = null;
 let currentSubscription = null;
+
 function connectToWebSocket() {
 
 
-
-
-
-
-
     const socket = new SockJS('http://localhost:8080/ws');
-    stompClient= Stomp.over(socket);
+    stompClient = Stomp.over(socket);
 
     stompClient.connect({}, function (frame) {
-   /*     stompClient.send("/app/chat.availableUser")///todo raczej usunąć tą linijke*!/*/
+
         console.log('Connected: ' + frame);
 
-        stompClient.subscribe('/topic/public',function(message) {
+
+
+
+        stompClient.subscribe('/topic/public/ActiveUsersAtStart', function (message) {
+            console.log("komunikat")
+            var activeUsers = JSON.parse(message.body);
+            if (Array.isArray(activeUsers)) {
+                if (Array.isArray(activeUsers)) {
+                    activeUsers.forEach(userId => updateUserStatus(userId, "CONNECTED"));
+
+                }
+            }
+        });
+        stompClient.send("/app/chat.requestActiveUsers", {}, {});
+
+
+
+        stompClient.subscribe('/topic/public', function (message) {
             var parsedMessage = JSON.parse(message.body);
             console.log(parsedMessage.id) //todo zwraca to samą 2 czyli jest dobrze . teraz zajmij sie metodą
-            updateUserStatus(parsedMessage.id,parsedMessage.status)
+            updateUserStatus(parsedMessage.id, parsedMessage.status)
 
         });
-        /* stompClient.subscribe('/topic/public', function (message) {
-
-            displayMessage('Server: ' + message.body);
-
-        });*/
-
-
 
 
     });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
-function updateUserStatus(id,status) {
-
-
+function updateUserStatus(id, status) {
 
 
     var userElements = document.querySelectorAll('ul li[data-userid]');
 
     userElements.forEach(element => {
-        if ((id.toString() === element.getAttribute('data-userid'))&&status.toString()==="CONNECTED") {
+        if ((id.toString() === element.getAttribute('data-userid')) && status.toString() === "CONNECTED") {
             console.log("uzytkownik :" + id);
             element.classList.add('online');
-        }  if ((id.toString() === element.getAttribute('data-userid'))&&status.toString()==="DISCONNECTED"){
+        }
+        if ((id.toString() === element.getAttribute('data-userid')) && status.toString() === "DISCONNECTED") {
             console.log("uzytkownik :" + id);
             element.classList.remove('online')
             element.classList.add('offline')
-        }else {
+        } else {
 
 
         }
@@ -79,18 +68,13 @@ function updateUserStatus(id,status) {
 }
 
 
-
-
-
-
-
-function openChatWindow(friendId,messageId,element) {//todo  przypisz potem friendId do chatId zamiast messageId
-    chatId=messageId
+function openChatWindow(friendId, messageId, element) {//todo  przypisz potem friendId do chatId zamiast messageId
+    chatId = messageId
 
     const firstName = element.getAttribute('data-first-name');
     const lastName = element.getAttribute('data-last-name');
 
-    console.log("JEST TO ID "+messageId)
+    console.log("JEST TO ID " + messageId)
     document.getElementById('chatWindow').style.display = 'flex';
     const socket = new SockJS('http://localhost:8080/ws');
     stompClient = Stomp.over(socket);
@@ -100,16 +84,9 @@ function openChatWindow(friendId,messageId,element) {//todo  przypisz potem frie
     }
 
 
-
-
-
-
-
-
-
-    stompClient.connect({}, function(frame) {
+    stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
-        currentSubscription= stompClient.subscribe( '/queue/messages/user/'+ messageId, function(message) {
+        currentSubscription = stompClient.subscribe('/queue/messages/user/' + messageId, function (message) {
             // displayMessage('Server: ' + message.body);
             displayMessage('Server: ' + message.body);
 
@@ -117,10 +94,10 @@ function openChatWindow(friendId,messageId,element) {//todo  przypisz potem frie
     });
 
 
-     var profileLink = '/profile?firstName=' + firstName + '&lastName=' + lastName + '&id=' + friendId;
+    var profileLink = '/profile?firstName=' + firstName + '&lastName=' + lastName + '&id=' + friendId;
 
     var friendLink = document.createElement('a');
-     friendLink.innerText = 'Znajomy ' + firstName + ' ' + lastName;
+    friendLink.innerText = 'Znajomy ' + firstName + ' ' + lastName;
     friendLink.href = '/profile?firstName=' + firstName + '&lastName=' + lastName + '&id=' + friendId;
 
 
@@ -134,16 +111,11 @@ function openChatWindow(friendId,messageId,element) {//todo  przypisz potem frie
     chatFriendName.appendChild(friendLink);
 
 
-
-
-
-
-
     const allMessageItems = document.querySelectorAll('#allMessages span');
-    console.log("rozmiar"+allMessageItems.length)
+    console.log("rozmiar" + allMessageItems.length)
 
 
-    allMessageItems.forEach(function(span) {
+    allMessageItems.forEach(function (span) {
         const chatId = span.getAttribute('data-chatId');
 
         if (chatId === messageId) {
@@ -159,22 +131,16 @@ function openChatWindow(friendId,messageId,element) {//todo  przypisz potem frie
     });
 
 
-
-
-
-
     /*   var contextOfMessage = element.querySelector('span').getAttribute('data-contextOfMessage');
           var chatId = element.querySelector('span').getAttribute('data-chatId');*/
 
 
-
     var elements = document.querySelectorAll('ul li[data-message]');
 
-    console.log("abcd"+elements.length)
+    console.log("abcd" + elements.length)
 
 
-
-    elements.forEach(function(element) {
+    elements.forEach(function (element) {
         var senderName = element.querySelector('span').getAttribute('data-sender-name');
 
         console.log("Sender Name: " + senderName);
@@ -186,14 +152,10 @@ function openChatWindow(friendId,messageId,element) {//todo  przypisz potem frie
 function sendMessage() {
     var messageInput = document.getElementById('messageInput');
     var message = messageInput.value;
-    stompClient.send("/app/chat.sendMessage/"+chatId, {}, JSON.stringify({content: message}));
+    stompClient.send("/app/chat.sendMessage/" + chatId, {}, JSON.stringify({content: message}));
 
     messageInput.value = '';
 }
-
-
-
-
 
 
 function displayMessage(message) {
@@ -205,14 +167,12 @@ function displayMessage(message) {
     chatContent.appendChild(messageElement);
 
 
-
 }
 
 function closeMessageWindow() {
 
 
     document.getElementById('messageWindow').style.display = 'none';
-
 
 
 }
