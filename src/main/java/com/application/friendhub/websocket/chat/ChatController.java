@@ -16,6 +16,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
 @Controller
 @Slf4j
 
@@ -27,10 +32,13 @@ public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
 
+    /*private final RabbitMQProducer rabbitMQProducer;
+*/
     public ChatController(UserRepository userRepository, AvailableUserService availableUserService, SimpMessagingTemplate messagingTemplate) {
         this.userRepository = userRepository;
         this.availableUserService = availableUserService;
         this.messagingTemplate = messagingTemplate;
+
     }
 
     @MessageMapping("/chat.joinedUser")
@@ -56,11 +64,11 @@ public class ChatController {
         @MessageMapping("/chat.sendMessage/{userId}")
 //        @SendToUser("/queue/messages/user/{userId}")
         public ChatMessage sendMessage(@DestinationVariable String userId, @Payload ChatMessage message,Authentication authentication,SimpMessageHeaderAccessor headerAccessor) {
-
+         log.error("to jest id "+userId);
             UserEntity user = userRepository.findUserEntityByEmail(authentication.getName()).orElseThrow();
              message.setSender(user.getUserDetailsEntity().getFirstName() + " " + user.getUserDetailsEntity().getLastName());
             messagingTemplate.convertAndSend("/queue/messages/user/" + userId, message);
-
+             /*rabbitMQProducer.sendMessage(userId,message,authentication);*/
 
 
             return message;
@@ -70,6 +78,16 @@ public class ChatController {
 
 
 
+    @MessageMapping("/chat.requestActiveUsers")
+    public void handleRequestActiveUsers() {
+
+        HashMap<Long, String> onlineUsers = availableUserService.getOnlineUsers();
+
+        List<Long> allActiveUsers = new ArrayList<Long>(onlineUsers.keySet());
+
+        messagingTemplate.convertAndSend("/topic/public/ActiveUsersAtStart", allActiveUsers);
+
+    }
 
 
 
