@@ -7,11 +7,13 @@ function connectToWebSocket() {
 
 
 
+
+
     const socket = new SockJS('http://localhost:8080/ws');
     stompClient= Stomp.over(socket);
 
     stompClient.connect({}, function (frame) {
-        /*stompClient.send("/app/chat.availableUser")*////todo raczej usunąć tą linijke*/
+   /*     stompClient.send("/app/chat.availableUser")///todo raczej usunąć tą linijke*!/*/
         console.log('Connected: ' + frame);
 
         stompClient.subscribe('/topic/public',function(message) {
@@ -31,6 +33,23 @@ function connectToWebSocket() {
 
     });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 function updateUserStatus(id,status) {
@@ -39,6 +58,7 @@ function updateUserStatus(id,status) {
 
 
     var userElements = document.querySelectorAll('ul li[data-userid]');
+
     userElements.forEach(element => {
         if ((id.toString() === element.getAttribute('data-userid'))&&status.toString()==="CONNECTED") {
             console.log("uzytkownik :" + id);
@@ -52,10 +72,8 @@ function updateUserStatus(id,status) {
 
         }
 
-        console.log("abc:" + id);
 
     });
-
 
 
 }
@@ -88,6 +106,7 @@ function openChatWindow(friendId,messageId,element) {//todo  przypisz potem frie
 
 
 
+
     stompClient.connect({}, function(frame) {
         console.log('Connected: ' + frame);
         currentSubscription= stompClient.subscribe( '/queue/messages/user/'+ messageId, function(message) {
@@ -110,11 +129,57 @@ function openChatWindow(friendId,messageId,element) {//todo  przypisz potem frie
     document.body.appendChild(friendLink);
 
 
-
-
     var chatFriendName = document.getElementById('chatFriendName');
     chatFriendName.innerHTML = '';
     chatFriendName.appendChild(friendLink);
+
+
+
+
+
+
+
+    const allMessageItems = document.querySelectorAll('#allMessages span');
+    console.log("rozmiar"+allMessageItems.length)
+
+
+    allMessageItems.forEach(function(span) {
+        const chatId = span.getAttribute('data-chatId');
+
+        if (chatId === messageId) {
+            const sender = span.getAttribute('data-sender');
+            const senderName = span.getAttribute('data-sender-name');
+
+            console.log('Sender ID:', sender);
+            console.log('Sender Name:', senderName);
+
+        }
+
+
+    });
+
+
+
+
+
+
+    /*   var contextOfMessage = element.querySelector('span').getAttribute('data-contextOfMessage');
+          var chatId = element.querySelector('span').getAttribute('data-chatId');*/
+
+
+
+    var elements = document.querySelectorAll('ul li[data-message]');
+
+    console.log("abcd"+elements.length)
+
+
+
+    elements.forEach(function(element) {
+        var senderName = element.querySelector('span').getAttribute('data-sender-name');
+
+        console.log("Sender Name: " + senderName);
+    });
+
 
 }
 
