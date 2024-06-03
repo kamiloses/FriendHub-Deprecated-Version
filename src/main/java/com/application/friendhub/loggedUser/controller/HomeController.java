@@ -8,6 +8,7 @@ import com.application.friendhub.loggedUser.dto.CommentDto;
 import com.application.friendhub.loggedUser.dto.FriendsDto;
 import com.application.friendhub.loggedUser.dto.ProfileDto;
 import com.application.friendhub.loggedUser.service.*;
+import com.application.friendhub.websocket.chat.ChatController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,8 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
@@ -39,9 +40,13 @@ public class HomeController {
     private CommentService commentService;
     private LikeService likeService;
     private LikeRepository likeRepository;
+    private PrivateChatService privateChatService;
+    private ChatController controller;
+    private PrivateChatRepository privateChatRepository;
+    private MessageRepository messageRepository;
 
 
-    public HomeController(CommentsRepository commentsRepository, TimelineService timelineService, TimelineRepository timelineRepository, UserDetailsRepository userDetailsRepository, ProfileDtoService profileDtoService, UserRepository userRepository, FriendsService friendsService, AddFriendsService addFriendsService, FriendsListRepository friendsListRepository, CommentService commentService, LikeService likeService, LikeRepository likeRepository) {
+    public HomeController(CommentsRepository commentsRepository, TimelineService timelineService, TimelineRepository timelineRepository, UserDetailsRepository userDetailsRepository, ProfileDtoService profileDtoService, UserRepository userRepository, FriendsService friendsService, AddFriendsService addFriendsService, FriendsListRepository friendsListRepository, CommentService commentService, LikeService likeService, LikeRepository likeRepository, ChatController controller, PrivateChatRepository privateChatRepository, MessageRepository messageRepository) {
         this.commentsRepository = commentsRepository;
         this.timelineService = timelineService;
         this.userDetailsRepository = userDetailsRepository;
@@ -54,11 +59,14 @@ public class HomeController {
         this.commentService = commentService;
         this.likeService = likeService;
         this.likeRepository = likeRepository;
+        this.controller = controller;
+        this.privateChatRepository = privateChatRepository;
+        this.messageRepository = messageRepository;
     }
 
 
     @GetMapping("/home")
-    public String home(Model model) {
+    public String home(Model model) throws IOException {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserEntity userEntity = userRepository.findUserEntityByEmail(email).orElseThrow(() -> new UsernameNotFoundException("not found"));
         List<TimelineEntity> allPosts = userRepository.findAllTimelineEntityByEmail(email);
@@ -68,19 +76,24 @@ public class HomeController {
         String firstNameAndLastName = userDetails.getFirstName() + " " + userDetails.getLastName();
 
 
+        if (userDetails.getProfilePicture() != null) {  //todo chwilowo
+            String base64Image = Base64.getEncoder().encodeToString(userDetails.getProfilePicture());
+            model.addAttribute("profilePicture", base64Image);
+        }
+
+
         model.addAttribute("nameAndSurname", firstNameAndLastName);
         model.addAttribute("allPosts", allPosts);
         model.addAttribute("userDetails", userDetails);
         model.addAttribute("allFriends", user);
 
-//        model.addAttribute("image", Base64.getEncoder().encodeToString(userDetails.getProfilePicture()));
-    /*    List<Long> timelineIds = allPosts.stream()
-                .map(TimelineEntity::getId)
-                .collect(Collectors.toList());*/
+
+        //        model.addAttribute("image", Base64.getEncoder().encodeToString(userDetails.getProfilePicture()));
+            /*    List<Long> timelineIds = allPosts.stream()
+                        .map(TimelineEntity::getId)
+                        .collect(Collectors.toList());*/
 
         List<LikesEntity> likesEntities = likeRepository.findLikesByTimelineEntities(allPosts);
-        System.out.println(likesEntities.size());
-
 
 
         Map<Long, Integer> postLikesCountMap = new HashMap<>();
@@ -98,9 +111,50 @@ public class HomeController {
         System.out.println(postLikesCountMap.size());
         model.addAttribute("postLikesCountMap", postLikesCountMap);
 
+
+        HashMap<Long, Boolean> isLiked = likeService.isCommentLiked(allPosts, likesEntities);
+
+        model.addAttribute("isLiked", isLiked);
+
+
+                /*String image ="data:image/jpg;base64," + Base64.getEncoder().encodeToString(userDetails.getProfilePicture());
+                     model.addAttribute("image", image);
+                String base64Image = Base64.getEncoder().encodeToString(userDetails.getProfilePicture());
+                byte[] imageData = userDetails.getProfilePicture();
+                try (FileOutputStream fos = new FileOutputStream("C:\\Riot Games\\obrazek.jpg")) {
+                    fos.write(base64Image.getBytes());
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }*/
+
+
+        List<PrivateChatEntity> privateChatByEmail = userRepository.findAllPrivateChatByEmail(userEntity.getEmail());
+        List<Long> privateChatId = privateChatByEmail.stream().map(PrivateChatEntity::getId).toList();
+        System.out.println(privateChatId);
+        List<MessagesEntity> allMessages = messageRepository.findAllMessagesRelatedWithPrivateChat(privateChatId);
+        model.addAttribute("allMessages", allMessages);
+
+
+        List<MessagesEntity> messagesEntityBySenderIdOrSenderId = messageRepository.findMessagesEntityBySenderIdOrReceiverId(userEntity.getId(), userEntity.getId());
+
+        System.out.println("abcd"+messagesEntityBySenderIdOrSenderId.size());
+        model.addAttribute("messagesRelatedWithYou",messagesEntityBySenderIdOrSenderId);
+
+        List<PrivateChatEntity> list =privateChatByEmail.stream().filter(chatMessage->chatMessage.getMessages().stream().anyMatch(messageId->messageId.getPrivateChats_id().getId().equals(chatMessage.getId()))).toList();
+
+
+        model.addAttribute("previousMessages",list);
+
+
+
+
+
+
+//jezeli privatechat jest równy mojemu id oraz first
         return "html/mainPaige";
     }
-
 
 
     @PostMapping("/home/add")
@@ -116,7 +170,12 @@ public class HomeController {
 
 
     @GetMapping("/friendhub/friends")
-    public String friends() {
+    public String friends(Model model) {
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity user = userRepository.findUserEntityByEmail(name).orElseThrow();
+        List<FriendsListEntity> allFriends = userRepository.findAllFriendListEntityById(user.getId());
+
+        model.addAttribute("allFriends", allFriends);
 
 
         return "html/friendsPaige";
@@ -145,8 +204,10 @@ public class HomeController {
 
 
     @PostMapping("/friendhub/profile/modifyProfile")
-    public String modifyProfile(ProfileDto profileDto) {
+    public String modifyProfile(ProfileDto profileDto) throws IOException {
         UserDetailsEntity userDetailsEntity = profileDtoService.profileDtoToUserDetailsEntity(profileDto);
+
+
         userDetailsRepository.save(userDetailsEntity);
 
 
@@ -157,7 +218,26 @@ public class HomeController {
     @GetMapping("/friendhub/searchFriends")
     public String searchFriends(Model model, String fullName) {
         List<UserDetailsEntity> user = friendsService.findUserByNameOrSurname(fullName);
+
+//        String base64Image = Base64.getEncoder().encodeToString(user.getProfilePicture());
         model.addAttribute("foundUsers", user);
+
+
+
+        List<Long> isHeYourFriend=new ArrayList<>();
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity loggedUser = userRepository.findUserEntityByEmail(name).orElseThrow();
+
+        for (UserDetailsEntity userDetailsEntity : user) {
+        for (FriendsListEntity friendsListEntity : loggedUser.getFriendsListEntities()) {
+                if (friendsListEntity.getConnectionToYourOwnAccount().getId().equals(userDetailsEntity.getId())) {
+                    isHeYourFriend.add(userDetailsEntity.getId());
+
+                }
+            }
+model.addAttribute("isHeYourFriend", isHeYourFriend);
+
+        }
 
 
         return "html/searchFriends";
@@ -180,12 +260,37 @@ public class HomeController {
         FriendsListEntity invitedAccount = addFriendsService.invitedFriendsDtoToEntity(friendsDto);
         FriendsListEntity invitingAccount = addFriendsService.invitingFriendsDtoToEntity(friendsDto);
 
+
         friendsListRepository.save(invitedAccount);
         friendsListRepository.save(invitingAccount);
+        privateChatRepository.save(addFriendsService.privateChatService(invitedAccount, invitingAccount));
 
 
         return "redirect:/friendhub/searchFriends";
     }
+
+    @PostMapping("/friendhub/searchFriends/remove")
+    public String removeFriend(@ModelAttribute FriendsDto friendsDto) {
+        System.out.println(friendsDto);
+        FriendsListEntity invitedAccount = addFriendsService.invitedFriendsDtoToEntity(friendsDto);
+        FriendsListEntity invitingAccount = addFriendsService.invitingFriendsDtoToEntity(friendsDto);
+        FriendsListEntity you = friendsListRepository.findByConnectionToYourOwnAccount_IdAndUserId_Id(invitingAccount.getConnectionToYourOwnAccount().getId(), invitingAccount.getUserId().getId());
+        FriendsListEntity he = friendsListRepository.findByConnectionToYourOwnAccount_IdAndUserId_Id(invitedAccount.getConnectionToYourOwnAccount().getId(), invitedAccount.getUserId().getId());
+        PrivateChatEntity privateChatEntitiesByUser1IdAndUser2Id = privateChatRepository.findPrivateChatEntitiesByUser1_IdAndUser2_Id(invitingAccount.getConnectionToYourOwnAccount().getId(), invitingAccount.getUserId().getId());
+
+        privateChatRepository.delete(privateChatEntitiesByUser1IdAndUser2Id);
+        friendsListRepository.delete(he);
+        friendsListRepository.delete(you);
+
+
+        return "redirect:/friendhub/searchFriends";
+    }
+
+
+
+
+
+
 
 
     @PostMapping("/home/removePost")//todo zmien na delete mapping
@@ -227,7 +332,7 @@ public class HomeController {
         UserEntity user = userRepository.findUserEntityByEmail(name).orElseThrow(() -> new UsernameNotFoundException("not found"));
 
 //        if (likeRepository.existsByLikeEntityId(likeDto.getLikesId()) && userRepository.existsById(user.getId()) && likeRepository.existsByUserEntityId(user.getId())) { //todo sprawdz czy nie usunąc likeRepository.existsByLikeEntityId(likeDto.getLikesId()
-          if (likeRepository.existsByLikeEntityIdAndUserEntityId(likeDto.getLikesId(),user.getId())&& userRepository.existsById(user.getId())){
+        if (likeRepository.existsByLikeEntityIdAndUserEntityId(likeDto.getLikesId(), user.getId()) && userRepository.existsById(user.getId())) {
             LikesEntity likesEntity = likeRepository.findByLikeEntity_IdAndUserEntity_Id(likeDto.getLikesId(), user.getId());
             likeRepository.delete(likesEntity);
 
@@ -239,7 +344,6 @@ public class HomeController {
 
         return "redirect:/home";
     }
-
 
 
     @PostMapping("/home/addReply")
