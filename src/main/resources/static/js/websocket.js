@@ -13,8 +13,6 @@ function connectToWebSocket() {
         console.log('Connected: ' + frame);
 
 
-
-
         stompClient.subscribe('/topic/public/ActiveUsersAtStart', function (message) {
             console.log("komunikat")
             var activeUsers = JSON.parse(message.body);
@@ -26,7 +24,6 @@ function connectToWebSocket() {
             }
         });
         stompClient.send("/app/chat.requestActiveUsers", {}, {});
-
 
 
         stompClient.subscribe('/topic/public', function (message) {
@@ -45,7 +42,7 @@ function connectToWebSocket() {
 function updateUserStatus(id, status) {
 
 
-    var userElements = document.querySelectorAll('ul li[data-userid]');
+    var userElements = document.querySelectorAll('aside div[data-userid]');
 
     userElements.forEach(element => {
         if ((id.toString() === element.getAttribute('data-userid')) && status.toString() === "CONNECTED") {
@@ -71,8 +68,17 @@ function updateUserStatus(id, status) {
 function openChatWindow(friendId, messageId, element) {//todo  przypisz potem friendId do chatId zamiast messageId
     chatId = messageId
 
+
+    const firstNameFromMessageWindow = element.getAttribute('data-first-name-from-window');
+    const lastNameFromMessageWindow = element.getAttribute('data-last-name-from-window');
+    const imageFromMessageWindow = element.getAttribute('data-image-from-window');
+    const modifiedImageFromWindow='data:image/jpeg;base64,'+imageFromMessageWindow
+
     const firstName = element.getAttribute('data-first-name');
     const lastName = element.getAttribute('data-last-name');
+    let profilePicture = element.getAttribute('data-image');
+    profilePicture = 'data:image/jpeg;base64,' + profilePicture;
+
 
     console.log("JEST TO ID " + messageId)
     document.getElementById('chatWindow').style.display = 'flex';
@@ -88,7 +94,13 @@ function openChatWindow(friendId, messageId, element) {//todo  przypisz potem fr
         console.log('Connected: ' + frame);
         currentSubscription = stompClient.subscribe('/queue/messages/user/' + messageId, function (message) {
             // displayMessage('Server: ' + message.body);
-            displayMessage('Server: ' + message.body);
+            let sender = JSON.parse(message.body);
+            let fullName = sender.sender;
+            let splitName = fullName.split(" ");
+            let firstName = splitName[0];
+            let lastName = splitName[1];
+            let senderImage='data:image/jpeg;base64,' + sender.senderEncodedPicture;
+            displayMessageWithImage(senderImage,firstName,lastName,sender.content);
 
         });
     });
@@ -97,18 +109,39 @@ function openChatWindow(friendId, messageId, element) {//todo  przypisz potem fr
     var profileLink = '/profile?firstName=' + firstName + '&lastName=' + lastName + '&id=' + friendId;
 
     var friendLink = document.createElement('a');
-    friendLink.innerText = 'Znajomy ' + firstName + ' ' + lastName;
-    friendLink.href = '/profile?firstName=' + firstName + '&lastName=' + lastName + '&id=' + friendId;
+
+    const imgElement = document.createElement('img');
+
+        imgElement.src = modifiedImageFromWindow;
+        if (imgElement.src.includes(null)){
+            imgElement.src = profilePicture;
+        }
 
 
+
+
+
+
+    imgElement.alt = firstName + ' ' + lastName;
+    imgElement.className = 'profile-image';  // Dodaj klasę CSS do stylizacji obrazka
+
+    friendLink.appendChild(imgElement);
+    if (firstNameFromMessageWindow && lastNameFromMessageWindow) {
+        friendLink.innerHTML +=firstNameFromMessageWindow + ' ' + lastNameFromMessageWindow;
+    } else {
+        friendLink.innerHTML +=firstName + ' ' + lastName;
+    }
+    friendLink.href = profileLink;
     friendLink.className = 'friend-link';
-
-    document.body.appendChild(friendLink);
 
 
     var chatFriendName = document.getElementById('chatFriendName');
     chatFriendName.innerHTML = '';
     chatFriendName.appendChild(friendLink);
+
+
+    const chatContent = document.getElementById('chatContent');
+    chatContent.innerHTML = '';
 
 
     const allMessageItems = document.querySelectorAll('#allMessages span');
@@ -121,6 +154,15 @@ function openChatWindow(friendId, messageId, element) {//todo  przypisz potem fr
         if (chatId === messageId) {
             const sender = span.getAttribute('data-sender');
             const senderName = span.getAttribute('data-sender-name');
+            const senderSurname = span.getAttribute('data-sender-surname');
+            const contextOfMessage = span.getAttribute('data-contextOfMessage');
+            const profilePicture = span.getAttribute('data-profile-picture');//todo tu
+
+
+            const modifiedProfilePicture = 'data:image/jpeg;base64,' + profilePicture;
+
+            displayMessageWithImage(modifiedProfilePicture, senderName, senderSurname, contextOfMessage);
+
 
             console.log('Sender ID:', sender);
             console.log('Sender Name:', senderName);
@@ -135,7 +177,7 @@ function openChatWindow(friendId, messageId, element) {//todo  przypisz potem fr
           var chatId = element.querySelector('span').getAttribute('data-chatId');*/
 
 
-    var elements = document.querySelectorAll('ul li[data-message]');
+    var elements = document.querySelectorAll('aside div[data-message]');
 
     console.log("abcd" + elements.length)
 
@@ -158,6 +200,7 @@ function sendMessage() {
 }
 
 
+
 function displayMessage(message) {
     const chatContent = document.getElementById('chatContent');
     const messageElement = document.createElement('div');
@@ -169,6 +212,7 @@ function displayMessage(message) {
 
 }
 
+
 function closeMessageWindow() {
 
 
@@ -176,3 +220,24 @@ function closeMessageWindow() {
 
 
 }
+
+function displayMessageWithImage(profilePicture, senderName, senderSurname, contextOfMessage) {
+    const chatContent = document.getElementById('chatContent');
+    const messageElement = document.createElement('div');
+
+    const imgElement = document.createElement('img');
+    imgElement.src = profilePicture;
+    imgElement.alt = senderName + ' ' + senderSurname;
+    imgElement.className = 'sender-image';
+
+    const textElement = document.createElement('span');
+    textElement.textContent = senderName + ' ' + senderSurname + ": " + contextOfMessage;
+
+    messageElement.appendChild(imgElement);
+    messageElement.appendChild(textElement);
+
+    chatContent.appendChild(messageElement);
+}
+
+
+
