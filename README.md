@@ -1,3 +1,7 @@
+I've been working  on this project since april.It is not finished yet, stil needs a lot of improvements, but main purpose of application is fulfiled.
+
+
+
 ![image](https://github.com/user-attachments/assets/95352487-d1e8-4cc7-af43-d7c3d24ecb81)
 
 
@@ -8,8 +12,8 @@
 
 
 
-After your first step registration is succesfull, you can proceed to second step.You will receive token on your gmail account.Your profile
-will be created after succesfull token verification.
+Once your first step registration is succesfull, you can proceed to second step.You will receive token on your gmail account.Your profile
+will be created after succesfull token verification.Your default profile image will be different depending on your sex.
 
 ![image](https://github.com/user-attachments/assets/25777a0d-6421-46bb-b665-f345038935f7)
 
@@ -31,6 +35,14 @@ Depending on if have your
 
 
 
+
+
 ![image](https://github.com/user-attachments/assets/0b2ea64e-3f92-48b6-9697-e18a54ad41e0)
+
+You can modify your account details.
 ![image](https://github.com/user-attachments/assets/0ece0132-634d-4557-847f-8a6e863560a5)
+
+
+
+
 
