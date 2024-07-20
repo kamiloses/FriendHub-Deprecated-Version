@@ -6,9 +6,11 @@ import com.application.friendhub.loggedUser.dto.ProfileDto;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 @Service
 public class ProfileDtoService {
-    private UserDetailsRepository userDetailsRepository;
+    private final UserDetailsRepository userDetailsRepository;
 
 
     public ProfileDtoService(UserDetailsRepository userDetailsRepository) {
@@ -16,7 +18,8 @@ public class ProfileDtoService {
     }
 
 
-    public UserDetailsEntity profileDtoToUserDetailsEntity(ProfileDto profileDto) {
+    public UserDetailsEntity profileDtoToUserDetailsEntity(ProfileDto profileDto) throws IOException {
+
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
         UserDetailsEntity userDetailsEntity = userDetailsRepository.findUserDetailsEntityByUserEntity_Email(name);
         userDetailsEntity.setFirstName(profileDto.getFirstName());
@@ -25,8 +28,10 @@ public class ProfileDtoService {
         userDetailsEntity.setLocalization(profileDto.getLocalization());
         userDetailsEntity.setEducation(profileDto.getEducation());
         userDetailsEntity.setWork(profileDto.getWork());
-//        userDetailsEntity.setSex(profileDto.getSex());
+        userDetailsEntity.setSex(profileDto.getSex());
         userDetailsEntity.setInterests(profileDto.getInterests());
+        userDetailsEntity.setProfilePicture(profileDto.getProfilePicture().getBytes());
+
 
 
         return userDetailsEntity;}
@@ -42,7 +47,8 @@ public class ProfileDtoService {
         profileDto.setLocalization(userDetailsEntity.getLocalization());
         profileDto.setEducation(userDetailsEntity.getEducation());
 //        profileDto.setSex(userDetailsEntity.getSex());
-    return profileDto;}
+        /*profileDto.setProfilePicture(userDetailsEntity.getProfilePicture());*/
+        return profileDto;}
 
 
 

@@ -1,0 +1,154 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background-color: #3b5998;
+    color: #fff;
+    padding: 10px 0;
+    width: 100%;
+}
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background-color: #3b5998;
+    color: #fff;
+    padding: 10px 0;
+    width: 100%;
+}
+
+nav {
+    display: flex;
+}
+
+.middle-navbar {
+    display: inline-block;
+    margin-left: 300px;
+}
+
+.left-navbar {
+    margin-top: 30px;
+}
+
+.right-side-of-navbar {
+    margin-left: 300px;
+}
+
+.right-side-of-navbar ul {
+    display: flex;
+    justify-content: space-between;
+}
+
+.right-side-of-navbar ul li {
+    margin-left: 30px;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    display: inline-block;
+}
+
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.left-navbar, .middle-navbar, .right-side-of-navbar {
+    display: flex;
+    align-items: center;
+}
+
+.left-navbar {
+    flex: 1;
+}
+
+.middle-navbar {
+    flex: 2;
+    justify-content: center;
+}
+
+.right-side-of-navbar {
+    flex: 1;
+    justify-content: flex-end;
+}
+
+nav form {
+    display: flex;
+    align-items: center;
+}
+
+nav form input {
+    margin-left: 20px;
+    padding: 5px;
+}
+
+nav button, nav a {
+    margin-left: 20px;
+    background-color: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+nav button:hover, nav a:hover {
+    text-decoration: underline;
+}
+
+.friends-list {
+    width: 80%;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    border-radius: 10px;
+}
+
+.friend {
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.friend img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
+.friend-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.friend-form button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.friend-form button:hover {
+    background-color: #45a049;
+}

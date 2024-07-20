@@ -5,14 +5,13 @@ import com.application.friendhub.api.other.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
 import java.util.List;
 
 
 @NoArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
-@RequiredArgsConstructor
 public class UserDto {
 
 
@@ -23,14 +22,13 @@ public class UserDto {
 
         private Long id;
 
-        @NonNull
         private String email;
-        @NonNull
         private String password;
-        @NonNull
         @Enumerated(EnumType.STRING)
         private Role role;
 
+        private Date createdAt;
+        private Date lastActivity;
         private List<FriendsListEntity> friendsListEntities;
 
 
@@ -54,6 +52,8 @@ public class UserDto {
 
         private List<PrivateChatEntity> privateChatUserTwo_id ;
 
+
+        private List<PublicChatEntity> publicChatUserOne_id;
 
 
     }

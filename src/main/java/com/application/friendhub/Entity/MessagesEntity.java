@@ -1,16 +1,14 @@
 package com.application.friendhub.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.catalina.User;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,22 +17,20 @@ public class MessagesEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Date DateOfSentMessage;
-
+    private Date dateOfSentMessage;
     private String contextOfReceivedMessage;
 
+    @ManyToOne
+    private UserEntity sender;
 
-    private Date dateOfReceivedMessage;
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL)
+    private List<MessageRecipientEntity> recipients;
 
     @ManyToOne
-    private UserEntity uploader ;
-
+    @JoinColumn(name = "private_chat_id")
+    private PrivateChatEntity privateChats_id;
 
     @ManyToOne
-    private UserEntity recipient;
-
-
-
-
-
+    @JoinColumn(name = "public_chat_id")
+    private PublicChatEntity publicChats_id;
 }

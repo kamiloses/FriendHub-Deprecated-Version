@@ -3,11 +3,8 @@ package com.application.friendhub.loggedUser.dto;
 import com.application.friendhub.registrationProcess.other.DateOfBirth;
 import com.application.friendhub.registrationProcess.other.Sex;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Locale;
 
@@ -23,6 +20,7 @@ public class ProfileDto {
     private String work;
     private Sex sex;
     private String interests;
-
+    /*private byte[] profilePicture;*/
+    private MultipartFile profilePicture;
 
 }

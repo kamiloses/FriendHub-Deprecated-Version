@@ -7,16 +7,17 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-@Component
+@Service
 @Lazy
 public class EmailServiceImpl {
 
-   public Logger LOG =LoggerFactory.getLogger(getClass());
+    public Logger LOG =LoggerFactory.getLogger(getClass());
 
 
     private final JavaMailSender javaMailSender;
@@ -27,13 +28,24 @@ public class EmailServiceImpl {
 
 
 
+    public void sendYourAccountData(String email){
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("friendhub.confirm@gmail.com");
+        message.setTo(email);
+        message.setText("Hi");
+        message.setSubject("Password Reminder");
+    }
+
+
+
     public void sendEmail(String toEmail, String token) throws IOException {
 
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setFrom("friendhub.confirm@gmail.com");
-        message.setTo("kamil.kurzaj04@gmail.com");
-        message.setText(contentOfTheEmail("kamil.kurzaj04@gmail.com","33333"));
+        message.setTo(toEmail);
+        message.setText(contentOfTheEmail(toEmail,token));
         message.setSubject("Verification Token");
 
         javaMailSender.send(message);
@@ -42,19 +54,19 @@ public class EmailServiceImpl {
 
     }
     private String contentOfTheEmail(String toEmail,String token) throws IOException {
-    DefaultResourceLoader loader = new DefaultResourceLoader();
-    String contentAsString = loader.getResource("mailContent/mailContent").getContentAsString(StandardCharsets.UTF_8);
-  return   contentAsString.replace("[User Name]", toEmail.substring(0, toEmail.indexOf("@"))).replace("[token]", token);
+        DefaultResourceLoader loader = new DefaultResourceLoader();
+        String contentAsString = loader.getResource("mailContent/mailContent").getContentAsString(StandardCharsets.UTF_8);
+        return   contentAsString.replace("[User Name]", toEmail.substring(0, toEmail.indexOf("@"))).replace("[token]", token);
+
+
+    }
+
+    public   String generateToken() {
+        String token = UUID.randomUUID().toString().substring(0, 5).toUpperCase();
+
+        LOG.info("token: "+token);
+        return token;
+    }
 
 
 }
-
-    public   String generateToken() {
-        UUID uuid = UUID.randomUUID();
-
-
-        return uuid.toString().substring(0, 5).toUpperCase();
-    }
-
-
-    }

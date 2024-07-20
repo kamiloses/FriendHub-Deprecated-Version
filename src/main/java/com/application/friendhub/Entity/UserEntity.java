@@ -2,33 +2,32 @@ package com.application.friendhub.Entity;
 
 import com.application.friendhub.api.other.Role;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
-@NoArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class UserEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NonNull
     private String email;
-    @NonNull
     private String password;
-    @NonNull
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy ="userId" )
-    private List<FriendsListEntity> friendsListEntities;
+    private Date createdAt;
+    private Date lastActivity;
 
+    @OneToMany(mappedBy = "userEntity")
+    private List<FriendsListEntity> friendsListEntities;
 
     @OneToMany(mappedBy = "user")
     private List<TimelineEntity> timelines;
@@ -36,21 +35,24 @@ public class UserEntity {
     @OneToMany(mappedBy = "connectionToYourOwnAccount")
     private List<FriendsListEntity> connectionToYourOwnAccount;
 
-
-//todo zaimplementować poten interface userDetails i zaimplementować is non expired itp
-    @OneToOne(mappedBy = "userEntity")
+    @OneToOne(mappedBy = "userEntity", cascade = CascadeType.REMOVE)
     private UserDetailsEntity userDetailsEntity;
 
-
-    @OneToMany(mappedBy = "userEntity",cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.REMOVE)
     private List<LikesEntity> likesEntities;
 
-
-    @OneToMany(mappedBy = "userEntity",cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.REMOVE)
     private List<CommentsEntity> commentEntity;
 
+    @OneToMany(mappedBy = "user1")
+    private List<PrivateChatEntity> privateChatUserOne_id;
 
+    @OneToMany(mappedBy = "user2")
+    private List<PrivateChatEntity> privateChatUserTwo_id;
 
+    @ManyToMany(mappedBy = "userEntity")
+    private List<PublicChatEntity> publicChats;
+
+    @OneToMany(mappedBy = "recipient")
+    private List<MessageRecipientEntity> receivedMessages;
 }
-
-

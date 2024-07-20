@@ -1,8 +1,7 @@
 package com.application.friendhub.loggedUser.dto;
 
 import com.application.friendhub.Entity.PrivateChatEntity;
-import com.application.friendhub.Entity.UserEntity;
-import jakarta.persistence.*;
+import com.application.friendhub.Entity.PublicChatEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,15 +24,15 @@ public class MessagesDTO {
     private String contextOfReceivedMessage;
 
 
-    private Date dateOfReceivedMessage;
 
     private UserDto sender;
 
 
-    private UserDto receiver;
+    private MessageRecipientDto MessageRecipientDto ;
 
 
-    private PrivateChatEntity privateChats_id; //todo tu
+    private PrivateChatEntity privateChats_id;
+    private PublicChatEntity publicChats_id;
 
 
 }

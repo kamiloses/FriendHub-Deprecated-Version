@@ -1,12 +1,15 @@
 package com.application.friendhub.Entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class FriendsListEntity {
     @Id
@@ -18,11 +21,22 @@ public class FriendsListEntity {
 
 
         @ManyToOne
-
-        private UserEntity userId;
+        @JoinColumn(name = "user_entity_id")
+        private UserEntity userEntity;
 
 
         @ManyToOne
     private UserEntity connectionToYourOwnAccount;
 
+
+    @OneToOne(mappedBy ="addedFriend_id")
+    private PrivateChatEntity addedFriend;
+
+    @OneToOne(mappedBy = "addingFriend_id")
+    private PrivateChatEntity addingFriend;
+
+
+
+
 }
+

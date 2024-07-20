@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Social App</title>
+    <link rel="stylesheet" href="/css/loggedUser/friendsPaige.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+        .friend {
+            position: relative;
+        }
+        .info-div {
+            display: none;
+            background-color: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            position: absolute;
+            top: 50px;
+            left: 0;
+            width: 300px;
+            z-index: 100;
+        }
+        .close-info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div>
+        <nav>
+            <div class="left-navbar">
+                <form th:action="@{/friendHub/searchFriends}" method="get">
+                    <input type="text" name="fullName" placeholder="First Name and Last Name">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <div class="middle-navbar">
+                <h1>FriendHub</h1>
+                <button onclick="window.location.href='http://localhost:8080/home'">Home</button>
+                <button onclick="window.location.href='http://localhost:8080/friendhub/profile'">Profile</button>
+                <button onclick="window.location.href='http://localhost:8080/friendhub/friends'">Friends</button>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <h2>My Friends</h2>
+    <section class="friends-list">
+        <div th:each="friend : ${allFriends}" class="friend"
+             th:data-userid="${friend.connectionToYourOwnAccount.id}"
+             th:data-first-name="${friend.firstName}"
+             th:data-last-name="${friend.lastName}">
+            <img th:src="${friend?.connectionToYourOwnAccount?.id}" alt="Profile Picture">
+            <p th:text="${friend.getFirstName()} + ' ' + ${friend.getLastName()}"></p>
+            <button type="button" onclick="showInfoDiv(event)">Show Info</button>
+            <div class="info-div">
+                <span class="close-info" onclick="closeInfoDiv(event)">X</span>
+                <div th:each="group : ${friend.possibleGroupToInvite}" class="group">
+                    <p>Info about Group <span th:text="${group}"></span></p>
+                    <form action="/friendhub/friends/addToGroup" method="post">
+                        <input type="hidden" name="friendId" th:value="${friend.connectionToYourOwnAccount.id}">
+                        <input type="hidden" name="groupId" th:value="${group}">
+                        <button type="submit">Add to Group</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div>
+        <p>&copy; 2024 FriendHub</p>
+    </div>
+</footer>
+
+<script>
+    function redirectToProfile(element) {
+        const friendId = element.getAttribute('data-userid');
+        const firstName = element.getAttribute('data-first-name');
+        const lastName = element.getAttribute('data-last-name');
+        const friendLink = `/profile?firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}&id=${friendId}`;
+        window.location.href = friendLink;
+    }
+
+    function showInfoDiv(event) {
+        event.stopPropagation();
+        const button = event.target;
+        const infoDiv = button.nextElementSibling;
+        infoDiv.style.display = infoDiv.style.display === 'none' || infoDiv.style.display === '' ? 'block' : 'none';
+    }
+
+    function closeInfoDiv(event) {
+        event.stopPropagation();
+        const closeBtn = event.target;
+        const infoDiv = closeBtn.parentElement;
+        infoDiv.style.display = 'none';
+    }
+</script>
+
+</body>
+</html>

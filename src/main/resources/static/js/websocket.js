@@ -1,6 +1,7 @@
 let stompClient = null
 let chatId = null;
 let currentSubscription = null;
+let isPublicChat="false";
 
 function connectToWebSocket() {
 
@@ -12,18 +13,17 @@ function connectToWebSocket() {
 
         console.log('Connected: ' + frame);
 
+        stompClient.send("/app/chat.requestActiveUsers", {}, {});
 
         stompClient.subscribe('/topic/public/ActiveUsersAtStart', function (message) {
-            console.log("komunikat")
             var activeUsers = JSON.parse(message.body);
-            if (Array.isArray(activeUsers)) {
+
                 if (Array.isArray(activeUsers)) {
                     activeUsers.forEach(userId => updateUserStatus(userId, "CONNECTED"));
 
-                }
             }
         });
-        stompClient.send("/app/chat.requestActiveUsers", {}, {});
+
 
 
         stompClient.subscribe('/topic/public', function (message) {
@@ -66,7 +66,7 @@ function updateUserStatus(id, status) {
 
 
 function openChatWindow(friendId, messageId, element) {//todo  przypisz potem friendId do chatId zamiast messageId
-    chatId = messageId
+    chatId = friendId
 
 
     const firstNameFromMessageWindow = element.getAttribute('data-first-name-from-window');
@@ -93,29 +93,32 @@ function openChatWindow(friendId, messageId, element) {//todo  przypisz potem fr
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
         currentSubscription = stompClient.subscribe('/queue/messages/user/' + messageId, function (message) {
-            // displayMessage('Server: ' + message.body);
+            chatId = messageId;
+
+
+            console.log('Received message: ', message.body);
+
             let sender = JSON.parse(message.body);
             let fullName = sender.sender;
             let splitName = fullName.split(" ");
             let firstName = splitName[0];
             let lastName = splitName[1];
-            let senderImage='data:image/jpeg;base64,' + sender.senderEncodedPicture;
-            displayMessageWithImage(senderImage,firstName,lastName,sender.content);
+            let senderImage = 'data:image/jpeg;base64,' + sender.senderEncodedPicture;
 
+            displayMessageWithImage(senderImage, firstName, lastName, sender.content);
         });
+        receiveRabbitMq(chatId)
     });
-
-
     var profileLink = '/profile?firstName=' + firstName + '&lastName=' + lastName + '&id=' + friendId;
 
     var friendLink = document.createElement('a');
 
     const imgElement = document.createElement('img');
 
-        imgElement.src = modifiedImageFromWindow;
-        if (imgElement.src.includes(null)){
-            imgElement.src = profilePicture;
-        }
+    imgElement.src = modifiedImageFromWindow;
+    if (imgElement.src.includes(null)){
+        imgElement.src = profilePicture;
+    }
 
 
 
@@ -123,7 +126,7 @@ function openChatWindow(friendId, messageId, element) {//todo  przypisz potem fr
 
 
     imgElement.alt = firstName + ' ' + lastName;
-    imgElement.className = 'profile-image';  // Dodaj klasę CSS do stylizacji obrazka
+    imgElement.className = 'profile-image';
 
     friendLink.appendChild(imgElement);
     if (firstNameFromMessageWindow && lastNameFromMessageWindow) {
@@ -156,7 +159,7 @@ function openChatWindow(friendId, messageId, element) {//todo  przypisz potem fr
             const senderName = span.getAttribute('data-sender-name');
             const senderSurname = span.getAttribute('data-sender-surname');
             const contextOfMessage = span.getAttribute('data-contextOfMessage');
-            const profilePicture = span.getAttribute('data-profile-picture');//todo tu
+            const profilePicture = span.getAttribute('data-profile-picture');
 
 
             const modifiedProfilePicture = 'data:image/jpeg;base64,' + profilePicture;
@@ -191,13 +194,30 @@ function openChatWindow(friendId, messageId, element) {//todo  przypisz potem fr
 
 }
 
+
+function receiveRabbitMq(chatId) {
+    console.log("received1")
+    stompClient.send("/app/chat.receiveRabbitMq/" + chatId, {}, JSON.stringify({chatId:chatId}));
+console.log("received2")
+}
+
 function sendMessage() {
     var messageInput = document.getElementById('messageInput');
     var message = messageInput.value;
-    stompClient.send("/app/chat.sendMessage/" + chatId, {}, JSON.stringify({content: message}));
-
+    stompClient.send("/app/chat.sendMessage/" + chatId, {}, JSON.stringify({chatId:chatId,content: message,isPublicChat:isPublicChat}));
+      console.log("wysłałem na :"+chatId)
     messageInput.value = '';
 }
+
+/*function sendMessageOnPublicGroup() {
+    var messageInput = document.getElementById('messageInput');
+    var message = messageInput.value;
+    stompClient.send("/app/chat.sendMessageOnPublicGroup/" + chatId, {}, JSON.stringify({content: message}));
+
+    messageInput.value = '';
+}*/
+
+
 
 
 
@@ -222,6 +242,7 @@ function closeMessageWindow() {
 }
 
 function displayMessageWithImage(profilePicture, senderName, senderSurname, contextOfMessage) {
+
     const chatContent = document.getElementById('chatContent');
     const messageElement = document.createElement('div');
 
@@ -232,12 +253,81 @@ function displayMessageWithImage(profilePicture, senderName, senderSurname, cont
 
     const textElement = document.createElement('span');
     textElement.textContent = senderName + ' ' + senderSurname + ": " + contextOfMessage;
-
+    console.log("afd"+textElement.textContent)
     messageElement.appendChild(imgElement);
     messageElement.appendChild(textElement);
 
     chatContent.appendChild(messageElement);
+
+
+
 }
 
 
 
+function openPublicChatWindow(element) {
+    const groupImage = element.getAttribute('data-group-image');
+    const groupName = element.getAttribute('data-group-name');
+    const groupId = element.getAttribute('data-group-id');
+    const modifiedGroupImage = 'data:image/jpeg;base64,' + groupImage;
+    chatId=groupId
+    document.getElementById('chatWindow').style.display = 'flex';
+    isPublicChat="true";
+    if (currentSubscription) {
+        currentSubscription.unsubscribe();
+    }
+
+    const socket = new SockJS('http://localhost:8080/ws');
+    stompClient = Stomp.over(socket);
+    console.log("połączyłem1")
+
+    stompClient.connect({}, function (frame) {
+        console.log("połączyłem2")
+        console.log('Connected: ' + frame);
+        currentSubscription = stompClient.subscribe('/topic/messages/chat/'+groupId, function (message) {
+          console.log("połącz")
+            let sender = JSON.parse(message.body);
+            let fullName = sender.sender;
+            let splitName = fullName.split(" ");
+            let firstName = splitName[0];
+            let lastName = splitName[1];
+            let senderImage = 'data:image/jpeg;base64,' + sender.senderEncodedPicture;
+            displayMessageWithImage(senderImage, firstName, lastName, sender.content);
+
+
+        });
+    });
+
+    var chatFriendName = document.getElementById('chatFriendName');
+    chatFriendName.innerHTML = `<span>${groupName}</span>`;
+
+    const chatContent = document.getElementById('chatContent');
+    chatContent.innerHTML = '';
+
+    const imgElement = document.createElement('img');
+    imgElement.src = modifiedGroupImage;
+    imgElement.alt = groupName;
+    imgElement.className = 'profile-image';
+    chatFriendName.prepend(imgElement);
+    const allMessageItems = document.querySelectorAll('#allMessages span');
+    console.log("rozmiar" + allMessageItems.length);
+
+    allMessageItems.forEach(function (span) {
+        const publicChatId = span.getAttribute('data-public-ChatId');
+
+        if (publicChatId === groupId) {
+            // const sender = span.getAttribute('data-sender');
+            const senderName = span.getAttribute('data-sender-name');
+            const senderSurname = span.getAttribute('data-sender-surname');
+            const contextOfMessage = span.getAttribute('data-contextOfMessage');
+            const profilePicture = span.getAttribute('data-profile-picture');
+
+            const modifiedProfilePicture = 'data:image/jpeg;base64,' + profilePicture;
+
+            displayMessageWithImage(modifiedProfilePicture, senderName, senderSurname, contextOfMessage);
+
+
+        }
+    });
+
+}

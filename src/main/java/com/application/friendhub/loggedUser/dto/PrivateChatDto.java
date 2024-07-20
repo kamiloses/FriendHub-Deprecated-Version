@@ -1,9 +1,6 @@
 package com.application.friendhub.loggedUser.dto;
 
 import com.application.friendhub.Entity.FriendsListEntity;
-import com.application.friendhub.Entity.MessagesEntity;
-import com.application.friendhub.Entity.UserEntity;
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
@@ -36,6 +33,8 @@ public class PrivateChatDto {
 
     private FriendsListEntity addingFriend_id;
 
+
+    private Long yourAccountId;
 
 
 

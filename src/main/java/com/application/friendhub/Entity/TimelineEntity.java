@@ -1,7 +1,9 @@
 package com.application.friendhub.Entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
@@ -10,7 +12,6 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class TimelineEntity {
 
     @Id
@@ -24,9 +25,20 @@ public class TimelineEntity {
     @Column(length = 1337)
     private String post;
 
-    private String image;
+
+    @Lob
+    @Column(name = "profile_picture", columnDefinition = "LongBlob")
+    private byte[] timelineImage;
+
+
+
 
     private Date dateOfPublication;
+
+
+
+
+
 
     @ManyToOne
     private UserEntity user;
@@ -39,13 +51,12 @@ public class TimelineEntity {
     @Column(name = "like_id")*/
 
 
-    @OneToMany(mappedBy = "likeEntity",cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "timelineEntity",cascade = CascadeType.REMOVE)
     private List<LikesEntity> likesEntities;
 
 
     @OneToMany(mappedBy = "timelineEntity", cascade = CascadeType.REMOVE)
     private List<CommentsEntity> commentsEntity;
-
 
 
 }

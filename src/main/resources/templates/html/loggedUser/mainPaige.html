@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FriendHub</title>
+    <link rel="stylesheet" href="/css/loggedUser/mainPaige.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <div id="chatWindow" style="display: none;">
+        <div id="chatHeader">
+            <span id="chatFriendName"></span>
+            <button onclick="closeChatWindow()">Close</button>
+        </div>
+        <div id="chatContent">
+        </div>
+        <div id="chatInput">
+
+
+            <div id="messages"></div>
+            <input type="text" id="messageInput" placeholder="send message...">
+
+            <button onclick="sendMessage()">Send</button>
+
+        </div>
+    </div>
+
+
+
+
+</head>
+<body>
+
+
+<header>
+    <div>
+        <nav>
+            <div class="left-navbar">
+                <form action="/friendHub/searchFriends" method="get">
+                    <input type="text" name="fullName" placeholder="First Name and Last Name">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <div class="middle-navbar">
+                <h1>FriendHub</h1>
+                <button onclick="window.location.href='http://localhost:8080/home'">Home</button>
+                <button onclick="window.location.href='http://localhost:8080/friendHub/profile'">Profile</button>
+                <button onclick="window.location.href='http://localhost:8080/friendHub/friends'">Friends</button>
+            </div>
+            <div class="right-side-of-navbar">
+                <ul>
+                    <li id="notificationsLink" class="icon">
+                        <i class="fas fa-bell"></i>
+                    </li>
+                    <li id="messagesLink" class="icon">
+                        <i class="fab fa-facebook-messenger"></i>
+                    </li>
+
+                    <li class="yourAccount">
+
+                        <div class="profile-container">
+                            <img th:src="'data:image/jpeg;base64,' + ${profilePicture}" onclick="toggleOptionsButton()" alt="Profile Picture"/>
+                            <span th:text="${nameAndSurname}" onclick="toggleOptionsButton()"></span>
+                        </div>
+                        <div id="options" style="display: none;">
+                            <button class="logout-button" onclick="window.location.href='/friendHub/logout'">Logout</button>
+                            <button class="create-group-button" onclick="showCreateGroupWindow()">Create Group</button>
+                        </div>
+
+                        <div id="createGroupWindow" class="modal" style="display: none;">
+                            <div class="modal-content">
+                                <span class="close" onclick="closeCreateGroupWindow()">&times;</span>
+                                <h2>Create Group</h2>
+                                <form action="/friendHub/home/createPublicChat" method="post" enctype="multipart/form-data">
+                                    <label for="groupName">Group Name:</label>
+                                    <input type="text" id="groupName" name="groupName" required>
+                                    <input type="file" id="groupImage" name="groupImage">
+                                    <button type="submit">Create</button>
+                                </form>
+                            </div>
+                        </div>
+
+                    </li>
+                </ul>
+
+
+            </div>
+        </nav>
+    </div>
+</header>
+
+<div id="notificationWindow">
+    your notifications
+    <button onclick="closeNotificationWindow()">Close</button>
+</div>
+
+<div id="messageWindow">
+    <ul>
+        <li th:each="message : ${previousMessages}">
+            <span th:onclick="'openChatWindow(\'' + ${message.id} + '\')'"></span>
+
+
+            <span th:with="lastMessage=${message.messages.get(message.messages.size() - 1)}">
+
+        <img th:src="'data:image/jpeg;base64,' + ${message.yourAccountId == lastMessage.sender.id ? lastMessage.receiver.userDetailsDto.encodedProfilePicture  : lastMessage.sender.userDetailsDto.encodedProfilePicture}" style="width: 50px; height: 50px; border-radius: 50%;" alt="Profile Picture"/>
+               <span th:text="${(message.yourAccountId == lastMessage.sender.id ? lastMessage.receiver.userDetailsDto.firstName : lastMessage.sender.userDetailsDto.firstName) + ' ' + (message.yourAccountId == lastMessage.sender.id ? lastMessage.receiver.userDetailsDto.lastName : lastMessage.sender.userDetailsDto.lastName)}" ></span>
+                <br>
+
+
+        <span th:text="${lastMessage.sender.getUserDetailsDto().firstName} + ' ' + ${lastMessage.sender.getUserDetailsDto().lastName} + ': ' + ${lastMessage.contextOfReceivedMessage} + ' ' + ${lastMessage.dateOfSentMessage}"
+              th:data-first-name-from-window="${message.yourAccountId == lastMessage.sender.id ? lastMessage.receiver.userDetailsDto.firstName  : lastMessage.sender.userDetailsDto.firstName  }"
+              th:data-last-name-from-window="${message.yourAccountId == lastMessage.sender.id ? lastMessage.receiver.userDetailsDto.lastName  : lastMessage.sender.userDetailsDto.lastName  }"
+              th:data-image-from-window="${message.yourAccountId == lastMessage.sender.id ? lastMessage.receiver.userDetailsDto.encodedProfilePicture  : lastMessage.sender.userDetailsDto.encodedProfilePicture  }"
+              th:onclick="'openChatWindow(\'' + ${message?.addedFriend_id?.connectionToYourOwnAccount.id != null ? message?.addedFriend_id?.connectionToYourOwnAccount.id : message?.addingFriend_id?.connectionToYourOwnAccount.id} + '\', \'' + ${message.id} + '\', this)'"></span>
+
+    </span>
+        </li>
+
+
+
+    </ul>
+</div>
+
+<div class="user-data">
+    <div th:object="${userDetails}">
+        <span th:text="*{getLocalization()}"></span>
+        <span th:text="*{getEducation()}"></span>
+        <span th:text="*{getWork()}"></span>
+        <span th:text="*{getInterests()}"></span>
+    </div>
+    <div class="photos"></div>
+</div>
+
+<ul>     <!--th:attr="data-message=${messagesRelatedWithYou}"-->
+    <li id="allMessages" th:each="messageEntity:${messagesRelatedWithYou}">
+       <span th:data-date-of-sent-message="${messageEntity.dateOfSentMessage}"
+             th:data-date-of-received-message="${messageEntity.dateOfSentMessage}"
+             th:data-chatId="${messageEntity?.privateChats_id?.id}"
+             th:data-sender="${messageEntity.sender}"
+             th:data-sender-name="${messageEntity.sender.userDetailsDto.firstName}"
+             th:data-sender-surname="${messageEntity.sender.userDetailsDto.lastName}"
+             th:data-public-ChatId="${messageEntity?.publicChats_id?.id}"
+
+             th:data-contextOfMessage="${messageEntity.contextOfReceivedMessage}"
+             th:data-profile-picture="${messageEntity.sender.userDetailsDto.encodedProfilePicture}"
+
+       >
+
+       </span>
+
+    </li>
+
+</ul>
+
+
+<div class="friends-list">
+    <aside>
+        <h2> Groups</h2>
+        <div id="yourGroupsList">
+
+            <div class="group-link" th:each="yourGroups : ${publicChat}"
+                 th:data-group-image="${yourGroups.encodedImage}"
+                 th:data-group-name="${yourGroups.groupName}"
+                 th:data-group-id="${yourGroups.id}"
+                 th:onclick="'openPublicChatWindow( this)'">
+                <span th:text="${yourGroups.groupName}+''+${yourGroups.id}"></span>
+            </div>
+        </div>
+
+
+
+
+
+        <h2>Friends</h2>
+        <div th:each="user : ${allFriends}" th:attr="data-userid=${user.connectionToYourOwnAccount.id}" class="friend">
+            <img class="all-friends-image" th:src="'data:image/jpeg;base64,' + ${user.connectionToYourOwnAccount.userDetailsDto.encodedProfilePicture}" alt="Profile Picture"/>
+
+            <div class="friend-link"
+
+                      th:onclick="'openChatWindow(\'' + ${user.connectionToYourOwnAccount.id} + '\', \'' + ${user?.addedFriend_id != null ? user.addedFriend_id.id : user.addingFriend_id.id} + '\', this)'"
+                      th:data-first-name="${user.firstName}"
+                      th:data-last-name="${user.lastName}"
+                      th:data-image="${user.connectionToYourOwnAccount.userDetailsDto.encodedProfilePicture}"
+                      th:text="${user.firstName} + ' ' + ${user.lastName} +''+ ${user.connectionToYourOwnAccount.id}">
+<!--                th:data-image="${user.lastName}"-->
+        </div>
+        </div>
+    </aside>
+
+    <main>  <!--<h2>Timeline</h2>
+            <form action="/home/add" method="post">
+                <textarea name="post" placeholder="What's on your mind?"></textarea>
+                <button type="submit">Post</button>-->
+        <section>
+            <h2>Timeline</h2>
+            <form action="/friendHub/home/add" method="post" enctype="multipart/form-data">
+                <textarea name="post" placeholder="What's on your mind?" required></textarea>
+                <div class="form-actions">
+                    <label for="file-upload" class="custom-file-upload">
+                        <i class="fa fa-paperclip"></i>
+                    </label>
+                    <input id="file-upload" type="file" name="multipartFile"/>
+                    <button type="submit">Post</button>
+                </div>
+            </form>
+            <div class="profile" th:if="${not #lists.isEmpty(allPosts)}" th:each="post : ${allPosts}">
+                <form class="remove-button" action="/friendHub/home/removePost" method="post">
+                    <input type="hidden" name="id" th:value="*{post.getId()}">
+                    <button type="submit">remove</button>
+                </form>
+
+
+                <div class="all">
+                    <img th:src="'data:image/jpeg;base64,' + ${profilePicture}" alt="Profile Picture"/>
+                    <span>Published by <span th:text="${post.getAuthor()}"></span></span>
+                </div>
+
+
+                <div th:text="${post.getPost()}"></div>
+                <div class="post-information">
+
+                    <span th:text="${postLikesCountMap.get(post.id)}"></span>
+                    <span>comments</span>
+                    <span>uploads</span>
+                </div>
+                <div class="interactions">
+                    <form action="/friendHub/home/addLike" method="post" class="add-like-form">
+                        <input type="hidden" name="likesId" th:value="${post.id}">
+
+                        <button th:class="${isLiked.get(post.id) != null ? 'liked' : ''}" type="submit">LikePost
+                        </button>
+                    </form>
+                    <button>comments</button>
+                    <button>uploads</button>
+                </div>
+
+
+                <div class="comments">
+                    <div th:if="${not #lists.isEmpty(post.getCommentsEntity())}"
+                         th:each="comment : ${post.getCommentsEntity()}">
+                        <div th:unless="${comment.getParentComment() != null}" class="comment">
+                            <span th:text="${comment.getFirstName()} + ' ' + ${comment.getLastName()}"></span>: <span
+                                th:text="${comment.getComment()}"></span>
+                            <span class="reply-button" onclick="toggleNestedComments(this)">Reply</span>
+                            <form action="/friendHub/home/addReply" method="post" class="add-reply-form" style="display: none;">
+                                <input type="hidden" name="parentCommentId" th:value="${comment.id}">
+                                <input type="hidden" name="timelineId" th:value="${post.id}">
+                                <input type="text" name="comment" placeholder="Write a reply...">
+                                <button type="submit">Reply</button>
+                            </form>
+
+
+                            <div class="nested-comments">
+                                <div th:each="reply : ${comment.getReplies()}">
+                                    <div class="comment">
+                                        <span th:text="${reply.getFirstName()} + ' ' + ${reply.getLastName()}"></span>:
+                                        <span th:text="${reply.getComment()}"></span>
+                                        <span class="reply-button" onclick="toggleNestedComments(this)">Reply</span>
+                                        <form action="/friendHub/home/addReply" method="post" class="add-reply-form"
+                                              style="display: none;">
+                                            <input type="hidden" name="parentCommentId" th:value="${reply.id}">
+                                            <input type="hidden" name="timelineId" th:value="${post.id}">
+                                            <input type="text" name="comment" placeholder="Write a reply...">
+                                            <button type="submit">Reply</button>
+                                        </form>
+
+
+                                        <!--   <form action="/home/addCommentLike" method="post" class="add-like-form">
+                                               <input type="hidden" name="commentId" th:value="${reply.id}">
+                                               <button type="submit">Likecomment</button>
+                                           </form>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form action="/friendHub/home/addComment" method="post">
+                        <input type="hidden" name="timelineId" th:value="${post.id}">
+                        <input type="text" name="comment" placeholder="Write a comment...">
+                        <button type="submit">Comment</button>
+                    </form>
+                </div>
+            </div>
+
+        </section>
+    </main>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="/js/websocket.js"></script>
+
+<script>
+
+
+    function closeNotificationWindow() {
+        document.getElementById('notificationWindow').style.display = 'none';
+    }
+
+    function toggleNestedComments(element) {
+        var commentContainer = element.closest('.comment');
+        var nestedComments = commentContainer.querySelectorAll('.nested-comments');
+        var replyForm = commentContainer.querySelector('.add-reply-form');
+
+        nestedComments.forEach(function (reply) {
+            if (reply.style.display === 'none') {
+                reply.style.display = 'block';
+            } else {
+                reply.style.display = 'none';
+            }
+        });
+
+        if (replyForm.style.display === 'none') {
+            replyForm.style.display = 'block';
+        } else {
+            replyForm.style.display = 'none';
+        }
+    }
+
+
+    document.getElementById('messagesLink').addEventListener('click', function () {
+        var messageWindow = document.getElementById('messageWindow');
+        if (messageWindow.style.display === 'none' || messageWindow.style.display === '') {
+            messageWindow.style.display = 'block';
+        } else {
+            messageWindow.style.display = 'none';
+        }
+    });
+
+    document.getElementById('notificationsLink').addEventListener('click', function () {
+        var notificationWindow = document.getElementById('notificationWindow');
+        if (notificationWindow.style.display === 'none') {
+            notificationWindow.style.display = 'block';
+        } else {
+            notificationWindow.style.display = 'none';
+        }
+    });
+
+
+
+    function closeChatWindow() {
+        document.getElementById('chatWindow').style.display = 'none';
+    }
+
+
+    window.onload = function () {
+        connectToWebSocket();
+    };
+
+    function toggleOptionsButton() {
+        var logoutContainer = document.getElementById('options');
+        if (logoutContainer.style.display === 'none' || logoutContainer.style.display === '') {
+            logoutContainer.style.display = 'block';
+        } else {
+            logoutContainer.style.display = 'none';
+        }
+    }
+
+
+
+    function showCreateGroupWindow() {
+        var createGroupWindow = document.getElementById('createGroupWindow');
+        createGroupWindow.style.display = 'block';
+    }
+
+    function closeCreateGroupWindow() {
+        var createGroupWindow = document.getElementById('createGroupWindow');
+        createGroupWindow.style.display = 'none';
+    }
+</script>
+</body>
+</html>
+
+
+
+
+

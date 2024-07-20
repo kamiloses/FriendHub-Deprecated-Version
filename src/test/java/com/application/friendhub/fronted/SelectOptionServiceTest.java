@@ -1,7 +1,8 @@
 package com.application.friendhub.fronted;
 
-import com.application.friendhub.dto.DateOfBirth;
-import com.application.friendhub.registrationProcess.FirstStepDto;
+import com.application.friendhub.registrationProcess.other.DateOfBirth;
+import com.application.friendhub.registrationProcess.dto.FirstStepDto;
+import com.application.friendhub.registrationProcess.service.SelectDateOfBirthOptionService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class SelectOptionServiceTest {
     @InjectMocks
-    private SelectOptionService selectOptionService;
+    private SelectDateOfBirthOptionService selectOptionService;
 
     @Mock
     private FirstStepDto userDetailsDto;
@@ -43,5 +44,7 @@ class SelectOptionServiceTest {
         Assertions.assertFalse(validation);
 
     }
+
+    
 
 }

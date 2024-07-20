@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Register - FriendHub</title>
-    <link rel="stylesheet" href="/css/registrationAndLogin/firstStep.css"><!--dodac /static -->
+    <link rel="stylesheet" href="/css/registrationAndLogin/firstStep.css">
 </head>
 <body>
 <div class="register">
     <div class="registerForm">
         <h1>Create a New Account</h1>
-        <form action="/register/firstStep/add" method="post" th:object="${firstStepDto}" >
+        <form action="/friendHub/register/firstStep/add" method="post" th:object="${firstStepDto}" >
             <label for="firstName">First name:</label>
             <input type="text" id="firstName" name="firstName" th:value="*{firstName}">
             <p th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="error"></p>
@@ -43,15 +43,14 @@
                 </div>
             </div>
             <label for="sex">Sex:</label>
-            <select id="sex" name="sex" >
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+            <select id="sex" name="sex">
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
             </select>
             <button type="submit">Register</button>
         </form>
         <div class="loginLink">
-            <p>Already have an account? <a href="/login">Log in here</a></p>
+            <p>Already have an account? <a href="/friendHub/login">Log in here</a></p>
         </div>
     </div>
 </div>

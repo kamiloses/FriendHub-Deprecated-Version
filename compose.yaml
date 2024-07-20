@@ -1,0 +1,54 @@
+services:
+  springboot-app:
+    container_name: 'springboot-container'
+    build: .
+    ports:
+      - '8080-8100:8080'
+    environment:
+      SPRING_DATASOURCE_URL: 'jdbc:mysql://mysql:3306/friendhub'
+      SPRING_DATASOURCE_USERNAME: 'kamiloses'
+      SPRING_DATASOURCE_PASSWORD: 'kamiloses'
+
+      spring.data.redis.host: redis
+      spring.data.redis.port: 6379
+      spring.data.redis.password: test123
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - my-network
+
+  mysql:
+    container_name: 'mysql-container'
+    image: 'mysql:latest'
+    restart: always
+    ports:
+      - '3307:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'kamiloses'
+      MYSQL_DATABASE: 'friendhub'
+      MYSQL_USER: 'kamiloses'
+      MYSQL_PASSWORD: 'kamiloses'
+    networks:
+      - my-network
+
+  redis:
+    container_name: 'redis-container'
+    image: 'redis:latest'
+    ports:
+      - '6379:6379'
+    environment:
+      - REDIS_PASSWORD=test123
+    volumes:
+      - redis-data:/data
+    networks:
+      - my-network
+
+volumes:
+  redis-data:
+    driver: local
+
+networks:
+  my-network:
+    driver: bridge
+#todo wszystko działa,dodaj jeszcze rabita żeby mozna było pisać

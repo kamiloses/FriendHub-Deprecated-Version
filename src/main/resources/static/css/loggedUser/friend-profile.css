@@ -1,0 +1,171 @@
+#messageWindow, #notificationWindow {
+    display: none;
+    position: fixed;
+    top: 50px;
+    right: 20px;
+    width: 300px;
+    max-height: 400px;
+    background-color: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+#notificationWindow {
+    right: 350px;
+}
+
+.right-side-of-navbar .icon {
+    cursor: pointer;
+    font-size: 24px;
+    margin: 0 10px;
+}
+
+.nested-comments {
+    margin-left: 20px;
+}
+
+.reply-button {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+
+.add-reply-form, .add-like-form {
+    margin-top: 5px;
+}
+
+.add-reply-form input[type="text"] {
+    width: calc(100% - 90px);
+}
+
+.add-reply-form button, .add-like-form button {
+    margin-left: 5px;
+}
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background-color: #3b5998;
+    color: #fff;
+    padding: 10px 0;
+    width: 100%;
+}
+
+nav {
+    display: flex;
+}
+
+.middle-navbar {
+    display: inline-block;
+    margin-left: 300px;
+}
+
+.left-navbar {
+    margin-top: 30px;
+}
+
+.right-side-of-navbar {
+    margin-left: 300px;
+}
+
+.right-side-of-navbar ul {
+    display: flex;
+    justify-content: space-between;
+}
+
+.right-side-of-navbar ul li {
+    margin-left: 30px;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    display: inline-block;
+    margin-left: 50px;
+}
+
+nav a:nth-child(2) {
+    color: #fff;
+    text-decoration: none;
+    display: inline-block;
+    margin-left: 400px;
+}
+
+nav button {
+    display: inline-block;
+}
+
+nav form {
+    display: inline-block;
+}
+
+nav button:hover {
+    background-color: #2d4373;
+}
+
+aside {
+    width: 30%;
+    float: right;
+}
+
+main {
+    width: 65%;
+}
+
+footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+}
+
+.profile {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #f0f2f5;
+    width: 600px;
+}
+
+.profile img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.comments {
+    margin-top: 10px;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+}
+
+.comments .comment {
+    margin-bottom: 10px;
+}
+
+.comments .comment span {
+    margin-right: 5px;
+}
+
+.add-comment-form {
+    margin-top: 10px;
+}
+
+.add-comment-form input[type="text"],
+.add-comment-form button {
+    vertical-align: middle;
+}
+
+.add-like-form button.liked {
+    background-color: green;
+}
+
+.add-comment-form.notLiked {
+    background-color: red;
+}

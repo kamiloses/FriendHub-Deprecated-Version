@@ -10,19 +10,20 @@
     <div class="loginForm">
         <h1>Login to FriendHub</h1>
 <!--        <p th:if="${loginError}" class="error">Wrong user or password</p>-->
-        <form th:action="@{/friendHub/login}" method="post">
-            <label for="username">Username:</label>
+        <form action="/friendHub/login" method="post">
+            <label for="username">Email:</label>
             <input type="text" id="username" name="username" placeholder="Username" required>
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
             <button type="submit" >Login</button>
         </form>
         <div class="forgotPassword">
-        <a href="/reset-password">do not remember your password ?</a></div>
+        <a href="/friendHub/remindMyPassword">do not remember your password ?</a></div>
         <div class="newAccount">
-        <a href="/register/firstStep">Create a new account</a>
+        <a href="/friendHub/register/firstStep">Create a new account</a>
         </div>
         </div>
 </div>
 </body>
 </html>
+<!--todo zmień potem username na email-->

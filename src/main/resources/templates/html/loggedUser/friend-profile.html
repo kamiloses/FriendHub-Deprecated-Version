@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FriendHub</title>
+    <link rel="stylesheet" href="/css/loggedUser/mainPaige.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+</head>
+<body>
+<header>
+    <div>
+        <nav>
+            <div class="left-navbar">
+                Logo
+                <form action="/friendHub/searchFriends" method="get">
+                    <input type="text" name="fullName" placeholder="First Name and Last Name">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <div class="middle-navbar">
+                <h1>FriendHub</h1>
+                <button onclick="window.location.href='http://localhost:8080/home'">Home</button>
+                <button onclick="window.location.href='http://localhost:8080/friendhub/profile'">Profile</button>
+                <button onclick="window.location.href='http://localhost:8080/friendhub/friends'">Friends</button>
+            </div>
+            <div class="right-side-of-navbar">
+                <ul>
+                    <li id="notificationsLink" class="icon">
+                        <i class="fas fa-bell"></i>
+                    </li>
+                    <li id="messagesLink" class="icon">
+                        <i class="fab fa-facebook-messenger"></i>
+                    </li>
+                    <li> <span th:text="${nameAndSurname}"> </span></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<div id="notificationWindow">
+    <button onclick="closeNotificationWindow()">Close</button>
+</div>
+
+<div id="messageWindow">
+    <button onclick="closeMessageWindow()">Close</button>
+</div>
+
+<div class="user-data">
+    <div th:object="${userDetails}">
+        <span th:text="*{getLocalization()}"></span>
+        <span th:text="*{getEducation()}"></span>
+        <span th:text="*{getWork()}"></span>
+        <span th:text="*{getInterests()}"></span>
+    </div>
+    <div class="photos"></div>
+</div>
+
+<div class="friends-list">
+    <aside>
+        <h2>Friends</h2>
+        <ul>
+            <li th:each="user : ${allFriends}">
+                <a th:href="@{'/profile?firstName=' + ${user.firstName} + '&lastName=' + ${user.lastName} + '&id='+${user.connectionToYourOwnAccount.id}}">
+                    <span th:text="${user.firstName} + ' ' + ${user.lastName} + ' ' + ${user.connectionToYourOwnAccount.id}"></span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+    <main>
+        <section>
+            <h2>Timeline</h2>
+            <div class="profile" th:if="${not #lists.isEmpty(allPosts)}" th:each="post : ${allPosts}">
+                <div class="all">
+                    <img src="facebookAvatar.png" alt="Profile Image">
+                    <span class="name" th:text="${post.getUploadedUser()}"></span>
+                    <span>Published by <span th:text="${post.getAuthor()}"></span></span>
+                </div>
+                <div th:text="${post.getPost()}"></div>
+                <div class="post-information">
+                    <span th:text="${postLikesCountMap.get(post.id)}"></span>
+                    <span>comments</span>
+                    <span>uploads</span>
+                </div>
+                <div class="interactions">
+                    <form action="/friendHub/home/addLikeToSomeone" method="post" class="add-like-form">
+                        <input type="hidden" name="likesId" th:value="${post.id}">
+                        <button th:class="${isLiked.get(post.id) != null ? 'liked' : ''}" type="submit">LikePost</button>
+                    </form>
+                    <button>comments</button>
+                    <button>uploads</button>
+                </div>
+                <div class="comments">
+                    <div th:if="${not #lists.isEmpty(post.getCommentsEntity())}" th:each="comment : ${post.getCommentsEntity()}">
+                        <div th:unless="${comment.getParentComment() != null}" class="comment">
+                            <span th:text="${comment.getFirstName()} + ' ' + ${comment.getLastName()}"></span>: <span th:text="${comment.getComment()}"></span>
+                            <span class="reply-button" onclick="toggleNestedComments(this)">Reply</span>
+                            <form action="/friendHub/home/addReplyOnFriendPaige" method="post" class="add-reply-form" style="display: none;">
+                                <input type="hidden" name="parentCommentId" th:value="${comment.id}">
+                                <input type="hidden" name="timelineId" th:value="${post.id}">
+                                <input type="text" name="comment" placeholder="Write a reply...">
+                                <button type="submit">Reply</button>
+                            </form>
+                            <div class="nested-comments">
+                                <div th:each="reply : ${comment.getReplies()}">
+                                    <div class="comment">
+                                        <span th:text="${reply.getFirstName()} + ' ' + ${reply.getLastName()}"></span>: <span th:text="${reply.getComment()}"></span>
+                                        <span class="reply-button" onclick="toggleNestedComments(this)">Reply</span>
+                                        <form action="/friendHub/home/addReply" method="post" class="add-reply-form" style="display: none;">
+                                            <input type="hidden" name="parentCommentId" th:value="${reply.id}">
+                                            <input type="hidden" name="timelineId" th:value="${post.id}">
+                                            <input type="text" name="comment" placeholder="Write a reply...">
+                                            <button type="submit">Reply</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form action="/friendHub/home/addCommentOnFriendPaige" method="post">
+                        <input type="hidden" name="timelineId" th:value="${post.id}">
+                        <input type="text" name="comment" placeholder="Write a comment...">
+                        <button type="submit">Comment</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+    function closeMessageWindow() {
+        document.getElementById('messageWindow').style.display = 'none';
+    }
+
+    function closeNotificationWindow() {
+        document.getElementById('notificationWindow').style.display = 'none';
+    }
+
+    function toggleNestedComments(element) {
+        var commentContainer = element.closest('.comment');
+        var nestedComments = commentContainer.querySelectorAll('.nested-comments');
+        var replyForm = commentContainer.querySelector('.add-reply-form');
+
+        nestedComments.forEach(function(reply) {
+            if (reply.style.display === 'none') {
+                reply.style.display = 'block';
+            } else {
+                reply.style.display = 'none';
+            }
+        });
+
+        if (replyForm.style.display === 'none') {
+            replyForm.style.display = 'block';
+        } else {
+            replyForm.style.display = 'none';
+        }
+    }
+
+    document.getElementById('messagesLink').addEventListener('click', function() {
+        var messageWindow = document.getElementById('messageWindow');
+        if (messageWindow.style.display === 'none') {
+            messageWindow.style.display = 'block';
+        } else {
+            messageWindow.style.display = 'none';
+        }
+    });
+
+    document.getElementById('notificationsLink').addEventListener('click', function() {
+        var notificationWindow = document.getElementById('notificationWindow');
+        if (notificationWindow.style.display === 'none') {
+            notificationWindow.style.display = 'block';
+        } else {
+            notificationWindow.style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>

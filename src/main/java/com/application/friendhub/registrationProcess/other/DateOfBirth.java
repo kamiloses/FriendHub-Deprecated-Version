@@ -1,5 +1,7 @@
 package com.application.friendhub.registrationProcess.other;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import jakarta.persistence.JoinColumn;
 import lombok.*;
 
@@ -8,14 +10,18 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
+@Embeddable
 public class DateOfBirth {
 
 
-    @JoinColumn(name = "DayOfBirth")
+
+    @Column(name = "day_of_birth")
     private int day;
-    @JoinColumn(name = "MonthOfBirth")
+
+    @Column(name = "month_of_birth")
     private int month;
-    @JoinColumn(name = "YearOfBirth")
+
+    @Column(name = "year_of_birth")
     private int year;
 
 }

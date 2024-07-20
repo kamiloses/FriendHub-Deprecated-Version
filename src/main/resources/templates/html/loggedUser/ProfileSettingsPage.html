@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile - My Social App</title>
+    <link rel="stylesheet" href="/css/loggedUser/ProfileSettingsPage.css">
+</head>
+<body>
+<header>
+    <div>
+        <nav>
+            <div class="left-navbar">
+                <form action="friendHub/searchFriends" method="get">
+                    <input type="text" name="fullName" placeholder="First Name and Last Name">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <div class="middle-navbar">
+                <h1>FriendHub</h1>
+                <button onclick="window.location.href='http://localhost:8080/home'">Home</button>
+                <button onclick="window.location.href='http://localhost:8080/friendhub/profile'">Profile</button>
+                <button onclick="window.location.href='http://localhost:8080/friendhub/friends'">Friends</button>
+            </div>
+</nav>
+  </div>
+</header>
+
+<div >
+    <main>
+        <section class="profile-details">
+            <h2>Edit Profile</h2>
+            <form id="profileForm"  action="/friendHub/profile/modifyProfile" th:object="${userDetailsEntity}" method="post" enctype="multipart/form-data">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName"  th:value="*{getFirstName()}" readonly ><br><br>
+
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName" th:value="*{getLastName()}" readonly><br><br>
+
+                <label for="birthdate">Date of Birth:</label>
+                <input type="text" id="birthdate" name="birthdate" th:value="${userDetailsEntity.getDate().getDay()}+'/'+${userDetailsEntity.getDate().getMonth()}+'/'+${userDetailsEntity.getDate().getYear()}" readonly><br><br>
+
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="localization"  th:value="*{getLocalization()}"><br><br>
+<!--todo zmien nazwe id dla location-->
+
+                <label for="education">Education:</label>
+                <input type="text" id="education" name="education" th:value="*{getEducation()}"><br><br>
+
+                <label for="work">Work:</label>
+                <input type="text" id="work" name="work" th:value="*{getWork()}" ><br><br>
+
+
+
+                <label for="interests">Interests:</label>
+                <textarea id="interests" name="interests" rows="4" th:text="*{getInterests()}"></textarea><br><br>
+
+
+                <label for="profilePicture">Profile Picture:</label>
+                <input type="file" id="profilePicture" name="profilePicture"><br><br>
+
+                <button type="submit">Save Changes</button>
+            </form>
+        </section>
+    </main>
+</div>
+
+<footer>
+    <div >
+        <p>&copy; 2024 Friendhub</p>
+    </div>
+</footer>
+
+</body>
+</html>

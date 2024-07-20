@@ -13,6 +13,7 @@ public class FriendsDto {
     private Long id;
     private String firstName;
     private String lastName;
+
     private DateOfBirth friendshipDate;
     private Long userId;
 

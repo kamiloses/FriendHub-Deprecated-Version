@@ -1,15 +1,18 @@
 package com.application.friendhub.Entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import org.hibernate.annotations.Cascade;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Entity
-@Data
+@NoArgsConstructor
+@Getter
+@Setter
 public class CommentsEntity {
 
     @Id

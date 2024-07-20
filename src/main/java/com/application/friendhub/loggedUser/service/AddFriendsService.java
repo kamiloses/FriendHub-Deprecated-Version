@@ -1,16 +1,13 @@
 package com.application.friendhub.loggedUser.service;
 
 import com.application.friendhub.Entity.FriendsListEntity;
-import com.application.friendhub.Entity.UserDetailsEntity;
+import com.application.friendhub.Entity.PrivateChatEntity;
 import com.application.friendhub.Entity.UserEntity;
 import com.application.friendhub.Repository.FriendsListRepository;
-import com.application.friendhub.Repository.UserDetailsRepository;
+import com.application.friendhub.Repository.PrivateChatRepository;
 import com.application.friendhub.Repository.UserRepository;
 import com.application.friendhub.loggedUser.dto.FriendsDto;
-import com.application.friendhub.registrationProcess.other.DateOfBirth;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -18,67 +15,85 @@ import java.util.Date;
 @Service
 public class AddFriendsService {
 
-    private final UserDetailsRepository userDetailsRepository;
-    private FriendsListRepository friendsListRepository;
-private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final FriendsListRepository friendsListRepository;
+    private final PrivateChatRepository privateChatRepository;
+    private final PrivateChatService privateChatService;
 
-    public AddFriendsService(FriendsListRepository friendsListRepository, UserRepository userRepository, UserDetailsRepository userDetailsRepository) {
-        this.friendsListRepository = friendsListRepository;
+    public AddFriendsService(UserRepository userRepository, FriendsListRepository friendsListRepository, PrivateChatRepository privateChatRepository, PrivateChatService privateChatService) {
         this.userRepository = userRepository;
-        this.userDetailsRepository = userDetailsRepository;
+        this.friendsListRepository = friendsListRepository;
+        this.privateChatRepository = privateChatRepository;
+        this.privateChatService = privateChatService;
     }
 
-      public FriendsListEntity invitedFriendsDtoToEntity(FriendsDto friendsDto) {
-          UserEntity userEntity = userRepository.findUserEntityById(friendsDto.getId());
-          String name = SecurityContextHolder.getContext().getAuthentication().getName();
-          UserEntity user = userRepository.findUserEntityByEmail(name).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-          FriendsListEntity friendsListEntity = new FriendsListEntity();
-        friendsListEntity.setFirstName(friendsDto.getFirstName());
-        friendsListEntity.setLastName(friendsDto.getLastName());
+
+    public FriendsListEntity invitedFriendsDtoToEntity(FriendsDto invitedFriend) {
+        UserEntity invitedFriendEntity = userRepository.findUserEntityById(invitedFriend.getId());
+
+        String myEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity myAccount = userRepository.findUserEntityByEmail(myEmail).get();
+
+
+        FriendsListEntity friendsListEntity = new FriendsListEntity();
+        friendsListEntity.setFirstName(invitedFriend.getFirstName());
+        friendsListEntity.setLastName(invitedFriend.getLastName());
         friendsListEntity.setFriendshipDate(new Date());
-          friendsListEntity.setUserId(user);
-          friendsListEntity.setConnectionToYourOwnAccount(userEntity);
+        friendsListEntity.setUserEntity(myAccount);
+        friendsListEntity.setConnectionToYourOwnAccount(invitedFriendEntity);
 
 
-
-
-     return friendsListEntity; }
-
-
-
-/*
-    public FriendsDto invitedFriendsEntityToDto(FriendsListEntity friendsListEntity,UserEntity user) {
-        FriendsDto friendsDto = new FriendsDto();
-        friendsDto.setFirstName(friendsListEntity.getFirstName());
-        friendsDto.setLastName(friendsListEntity.getLastName());
-        friendsDto.setFriendshipDate(new DateOfBirth());
-
-    return friendsDto;}
-*/
+        return friendsListEntity;
+    }
 
 
 
 
 
 
+    public FriendsListEntity invitingFriendsDtoToEntity(FriendsDto invitedFriend) {
+        String myEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserEntity myAccount = userRepository.findUserEntityByEmail(myEmail).get();
+
+        UserEntity addedFriend = userRepository.findUserEntityById(invitedFriend.getId());
+
+        FriendsListEntity friendsListEntity = new FriendsListEntity();
+        friendsListEntity.setFirstName(myAccount.getUserDetailsEntity().getFirstName());
+        friendsListEntity.setLastName(myAccount.getUserDetailsEntity().getLastName());
+        friendsListEntity.setFriendshipDate(new Date());
+        friendsListEntity.setUserEntity(addedFriend);
+        friendsListEntity.setConnectionToYourOwnAccount(myAccount);
 
 
-      public FriendsListEntity invitingFriendsDtoToEntity(FriendsDto friendsDto){
-          String name = SecurityContextHolder.getContext().getAuthentication().getName();
-          UserEntity user = userRepository.findUserEntityByEmail(name).orElseThrow(() -> new UsernameNotFoundException("not found"));
-          UserDetailsEntity userDetails = userDetailsRepository.findUserDetailsEntityByUserEntity_Email(name);
-          UserEntity userEntity = userRepository.findUserEntityById(friendsDto.getId());
-          FriendsListEntity friendsListEntity = new FriendsListEntity();
-           friendsListEntity.setFirstName(userDetails.getFirstName());
-           friendsListEntity.setLastName(userDetails.getLastName());
-          friendsListEntity.setFriendshipDate(new Date());
-          friendsListEntity.setUserId(userEntity);
-          friendsListEntity.setConnectionToYourOwnAccount(user);
-          return friendsListEntity;}
+        return friendsListEntity;
+    }
 
 
+    public void removeFriend(FriendsDto friendsDto){
+        FriendsListEntity invitedAccount = invitedFriendsDtoToEntity(friendsDto);
+        FriendsListEntity invitingAccount =invitingFriendsDtoToEntity(friendsDto);
+
+        FriendsListEntity you = friendsListRepository.findByConnectionToYourOwnAccount_IdAndUserEntity_Id(invitingAccount.getConnectionToYourOwnAccount().getId(), invitingAccount.getUserEntity().getId());
+        FriendsListEntity he = friendsListRepository.findByConnectionToYourOwnAccount_IdAndUserEntity_Id(invitedAccount.getConnectionToYourOwnAccount().getId(), invitedAccount.getUserEntity().getId());
+
+        PrivateChatEntity privateChatEntitiesByUser1IdAndUser2Id = privateChatRepository.findPrivateChatEntitiesByUser1_IdAndUser2_Id(invitingAccount.getConnectionToYourOwnAccount().getId(), invitingAccount.getUserEntity().getId());
+
+        privateChatRepository.delete(privateChatEntitiesByUser1IdAndUser2Id);
+        friendsListRepository.delete(he);
+        friendsListRepository.delete(you);
+
+    }
+public void addFriend(FriendsDto friendsDto){
+
+    FriendsListEntity invitedAccount = invitedFriendsDtoToEntity(friendsDto);
+    FriendsListEntity invitingAccount = invitingFriendsDtoToEntity(friendsDto);
 
 
+    friendsListRepository.save(invitedAccount);
+    friendsListRepository.save(invitingAccount);
+    privateChatRepository.save(privateChatService.createPrivateChatService(invitedAccount, invitingAccount));
 
+
+}
 
 }

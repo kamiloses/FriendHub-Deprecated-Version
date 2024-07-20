@@ -9,6 +9,9 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,4 +35,6 @@ public class FriendsListDto {
     private PrivateChatEntity addingFriend_id;
 
 
+
+    private List<Long> possibleGroupToInvite; //
 }

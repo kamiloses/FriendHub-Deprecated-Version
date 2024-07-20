@@ -1,12 +1,16 @@
 package com.application.friendhub.Entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.List;
+import java.util.Date;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class LikesEntity {
 
     @Id
@@ -17,13 +21,15 @@ public class LikesEntity {
 
     private String lastName;
 
+    private Date dateOfLike;
 
     @ManyToOne
-    TimelineEntity likeEntity;
+    TimelineEntity timelineEntity;
 
 
     @ManyToOne
     UserEntity userEntity;
+
 
 
 }

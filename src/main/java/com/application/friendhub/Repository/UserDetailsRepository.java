@@ -15,7 +15,7 @@ public interface UserDetailsRepository extends JpaRepository<UserDetailsEntity,L
      @Query("SELECT u FROM UserDetailsEntity u WHERE (u.firstName = :firstName OR u.lastName = :lastName) AND u.userEntity.id != :userId")
      List<UserDetailsEntity> findUserDetailsEntitiesByFirstNameOrLastName( @Param("firstName") String firstName,
                                                                            @Param("lastName") String lastName,
-                                                                            @Param("userId") Long userId);
+                                                                           @Param("userId") Long userId);
 
 
 

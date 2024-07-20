@@ -11,7 +11,7 @@ public class FriendsListService {
 
 
 
-private UserService userService;
+private final UserService userService;
 
     public FriendsListService(UserService userService) {
         this.userService = userService;
@@ -19,30 +19,38 @@ private UserService userService;
 
 
     public List<FriendsListDto> friendsListEntityToDto(List<FriendsListEntity> friendsListEntities){
-    return     friendsListEntities.stream().map(friendsListEntity -> {
-            FriendsListDto friendsListDto = new FriendsListDto();
-            friendsListDto.setId(friendsListEntity.getId());
-            friendsListDto.setFirstName(friendsListEntity.getFirstName());
-            friendsListDto.setLastName(friendsListEntity.getLastName());
-            friendsListDto.setFriendshipDate(friendsListEntity.getFriendshipDate());
-            friendsListDto.setUserId(userService.userEntityToDto(friendsListEntity.getUserId()));
-            friendsListDto.setConnectionToYourOwnAccount(userService.userEntityToDto(friendsListEntity.getConnectionToYourOwnAccount()));
-            friendsListDto.setAddedFriend_id(friendsListEntity.getAddedFriend_id());
-            friendsListDto.setAddingFriend_id(friendsListEntity.getAddingFriend_id());
+    return     friendsListEntities.stream().map(friendsListEntity -> friendsListDto(friendsListEntity)).toList();
 
-return friendsListDto;
-}).toList();
+    }
 
+    public List<FriendsListDto> friendsListWithGroupEntityToDto(List<FriendsListEntity> friendsListEntities, List<Long>addFriendToGroup) {
+        return friendsListEntities.stream().map(friendsListEntity -> {
+
+
+            FriendsListDto friendsListDto = friendsListDto(friendsListEntity);
+            friendsListDto.setPossibleGroupToInvite(addFriendToGroup);
+            return friendsListDto;
+        }).toList();
     }
 
 
 
+    private FriendsListDto friendsListDto(FriendsListEntity friendsListEntity) {
+
+
+        FriendsListDto friendsListDto = new FriendsListDto();
+        friendsListDto.setId(friendsListEntity.getId());
+        friendsListDto.setFirstName(friendsListEntity.getFirstName());
+        friendsListDto.setLastName(friendsListEntity.getLastName());
+        friendsListDto.setFriendshipDate(friendsListEntity.getFriendshipDate());
+        friendsListDto.setUserId(userService.userEntityToDto(friendsListEntity.getUserEntity()));
+        friendsListDto.setConnectionToYourOwnAccount(userService.userEntityToDto(friendsListEntity.getConnectionToYourOwnAccount()));
+        friendsListDto.setAddedFriend_id(friendsListEntity.getAddedFriend());
+        friendsListDto.setAddingFriend_id(friendsListEntity.getAddingFriend());
 
 
 
-
-
-
+    return friendsListDto;}
 
 
 

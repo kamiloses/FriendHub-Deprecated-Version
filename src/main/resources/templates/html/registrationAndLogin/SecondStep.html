@@ -10,14 +10,19 @@
 <div class="verify">
     <div class="verifyForm">
         <h1>Verify Email</h1>
-        <form action="/register/secondStep/add" method="post"  th:object="${secondStepDto}">
+        <form action="/friendHub/register/secondStep/add" method="post"  th:object="${secondStepDto}">
             <label for="token">Token:</label>
             <input type="text" id="token" name="token" required>
             <p th:if="${#fields.hasErrors('token')}" th:errors="*{token}" class="error"></p>
 
             <button type="submit">Verify</button>
         </form  >
-        <p class="resendToken"><a href="#">Resend Token Verification</a></p>
+
+
+        <form action="/friendHub/register/secondStep/resendToken" method="post">
+        <!--<p class="resendToken"><a href="#">Resend Token Verification</a></p>-->
+        <button type="submit">Resend token verification</button>
+        </form>
     </div>
 </div>
 </body>

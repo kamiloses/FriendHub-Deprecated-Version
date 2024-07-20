@@ -1,0 +1,117 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
+
+
+}
+
+header {
+    background-color: #3b5998;
+    color: #fff;
+    padding: 10px 0;
+    width: 100%;
+}
+
+.middle-navbar {
+    display: table;
+}
+
+.middle-navbar h1 {
+    margin-left: 55px;
+}
+
+.left-navbar {
+    display: inline-block;
+}
+
+nav .left-navbar input {
+    padding: 5px;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+}
+
+nav button {
+    background-color: #4267b2;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    display: inline-block;
+    margin-left: 50px;
+}
+
+nav a:nth-child(2) {
+    color: #fff;
+    text-decoration: none;
+    display: inline-block;
+    margin-left: 20px;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+}
+
+.friends-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.friend {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.friend img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+}
+
+
+
+.info-div {
+    display: none;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 20px;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 300px;
+    z-index: 100;
+}
+.close-info {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}

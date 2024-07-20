@@ -1,7 +1,6 @@
 package com.application.friendhub.loggedUser.service;
 
 import com.application.friendhub.Entity.UserDetailsEntity;
-import com.application.friendhub.Repository.UserDetailsRepository;
 import com.application.friendhub.loggedUser.dto.UserDetailsDto;
 import org.springframework.stereotype.Service;
 
