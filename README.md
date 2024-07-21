@@ -35,7 +35,7 @@ You can add or remove friends depending on if they are already your friends.
 You can add friends to a group to chat with each other.
 ![image](https://github.com/user-attachments/assets/0b2ea64e-3f92-48b6-9697-e18a54ad41e0)
 
-You can modify your account details.
+You can modify your account details, including your profile image. The girl image shown earlier was not the default.
 ![image](https://github.com/user-attachments/assets/0ece0132-634d-4557-847f-8a6e863560a5)
 
 
