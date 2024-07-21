@@ -1,4 +1,4 @@
-I've been working  on this project since april.It is not finished yet, stil needs a lot of improvements, but main purpose of application is fulfiled.
+I've been working on this project since April. It is not finished yet and still needs a lot of improvements, but the main purpose of the application is fulfilled.
 
 
 
@@ -10,34 +10,29 @@ I've been working  on this project since april.It is not finished yet, stil need
 
   ![image](https://github.com/user-attachments/assets/45478869-cf3d-4b28-80f6-51f7a22e16e4)
 
-
-
-Once your first step registration is succesfull, you can proceed to second step.You will receive token on your gmail account.Your profile
-will be created after succesfull token verification.Your default profile image will be different depending on your sex.
+Once your registration is successful, you can proceed to the second step. You will receive a token on your Gmail account. Your profile will be created after successful token verification. Your default profile image will be different depending on your sex.
 
 ![image](https://github.com/user-attachments/assets/25777a0d-6421-46bb-b665-f345038935f7)
 
-You can create posts,write comments , 
-reply to comments.If you have liked some post, The like button will be green.There will be also displayed number of likes.
+You can create posts, write comments, and reply to comments. If you like a post, the like button will turn green and the number of likes will be displayed
 ![image](https://github.com/user-attachments/assets/6e6466b8-1071-4e42-84a3-19cc31ea40ee)
 
 
 
-EventListeners are responsible for checking if your friend is online.
-If is he  online, his color will be changed  on green color.
+Event Listeners are responsible for checking if your friend is online. If they are online, their status color will change to green.
 ![image](https://github.com/user-attachments/assets/2d940a97-0937-48ec-afe7-af8adddc5954)
 
 
-Here you can see writing messages in real time with friend.
+You can see real-time messaging with friends here.
 ![image](https://github.com/user-attachments/assets/0fc94f47-339e-4250-a9e7-54c6b2911fe3)
 
-You can add friend or remove depending on if he is already your friend.
+You can add or remove friends depending on if they are already your friends.
 ![image](https://github.com/user-attachments/assets/e0faf222-7fe4-483f-950c-d41e8113a76e)
 
 
 
 
-You can add Friends to group write with each other
+You can add friends to a group to chat with each other.
 ![image](https://github.com/user-attachments/assets/0b2ea64e-3f92-48b6-9697-e18a54ad41e0)
 
 You can modify your account details.
@@ -46,28 +41,32 @@ You can modify your account details.
 
 
 
-Note that ,application is not ready yet.I need to improve html code,Modify api code ,And and more tests. Curently i am focusing on that. To have application resembling facebook.
-In the future when i learn Angular and js ,project will be drastically changed.
+As i said  the application is not ready yet. I need to improve the HTML code, modify the API code, and perform more tests. Currently, I am focusing on making the application more rerembing Facebook. In the future, when I learn Angular and JavaScript, the project will be drastically changed.
 
 
 
 
-Tools/libraries Which I used
--Java 17
--Spring boot 3
--Spring securiy 6
--Json Web Token
--Docker Compose
--Hibernate
--RabbitMQ
--Websockets
--Junit/Mockito
--thymeleaf
--html&Css
--javascript
--java mail sender
--lombok
--Session data reddis
+
+
+Tools/Libraries which I used:
+    
+- Java 17
+- Spring Boot 3
+- Spring Security 6
+- JSON Web Token
+- Docker Compose
+- Hibernate
+- RabbitMQ
+- WebSockets
+- JUnit/Mockito
+- Thymeleaf
+- HTML & CSS
+- JavaScript
+- Java Mail Sender
+- Lombok
+- Redis Session Data
+
+
 
 
 
