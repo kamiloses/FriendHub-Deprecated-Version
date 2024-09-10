@@ -1,4 +1,4 @@
-I've been working on this project since April. It is not finished yet and still needs a lot of improvements, but the main purpose of the application is fulfilled.
+My first big project which took almost three months. It still needs some improvements, like cleaner code and better CSS, but the main goal of the application is done.
 
 
 
@@ -37,12 +37,6 @@ You can add friends to a group to chat with each other.
 
 You can modify your account details, including your profile image. The girl image shown earlier was not the default.
 ![image](https://github.com/user-attachments/assets/0ece0132-634d-4557-847f-8a6e863560a5)
-
-
-
-
-As i said  the application is not ready yet. I need to improve the HTML code, modify the API code, and perform more tests. Currently, I am focusing on making the application more rerembing Facebook. In the future, when I learn Angular and JavaScript, the project will be drastically changed.
-
 
 
 
