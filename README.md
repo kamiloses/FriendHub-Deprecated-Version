@@ -50,7 +50,6 @@ Tools/Libraries which I used:
 - JSON Web Token
 - Docker Compose
 - Hibernate
-- RabbitMQ
 - WebSockets
 - JUnit/Mockito
 - Thymeleaf
